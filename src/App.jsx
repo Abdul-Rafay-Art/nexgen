@@ -3,20 +3,33 @@ import catalogProducts from './catalogProducts.json';
 
 const logo = 'https://nexxgenhome.com/wp-content/uploads/2022/02/cropped-NEXXGEN-LOGO-V-RGB_site_logo.png';
 
+const BASE = import.meta.env.BASE_URL;
+
+function toBase(path) {
+  return path === '/' ? BASE : BASE.replace(/\/$/, '') + path;
+}
+
+function fromBase(pathname) {
+  const prefix = BASE.replace(/\/$/, '');
+  if (!pathname.startsWith(prefix)) return pathname;
+  const path = pathname.slice(prefix.length);
+  return path === '' || path === '/' ? '/' : path;
+}
+
 function navigate(path) {
-  window.history.pushState({}, '', path);
+  window.history.pushState({}, '', toBase(path));
   window.dispatchEvent(new PopStateEvent('popstate'));
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function Link({ href, children, className = '' }) {
   const internal = href.startsWith('/');
-  return <a className={className} href={href} onClick={internal ? (event) => { event.preventDefault(); navigate(href); } : undefined}>{children}</a>;
+  return <a className={className} href={internal ? toBase(href) : href} onClick={internal ? (event) => { event.preventDefault(); navigate(href); } : undefined}>{children}</a>;
 }
 
 function Header() {
   const [open, setOpen] = useState(false);
-  const currentPath = window.location.pathname;
+  const currentPath = fromBase(window.location.pathname);
   const itemClass = (path) => currentPath === path ? 'active' : '';
   return <header className="site-header"><div className="container nav-wrap">
     <Link className="brand" href="/"><img src={logo} alt="A&A NexxGen" /></Link>
@@ -61,7 +74,7 @@ function Products() {
   const [activeCategory, setActiveCategory] = useState('All products');
   const filterCategories = ['All products', ...new Set(catalogProducts.map((product) => product.category))];
   const visibleProducts = activeCategory === 'All products' ? catalogProducts : catalogProducts.filter((product) => product.category === activeCategory);
-  return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero"><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{catalogProducts.length}</strong> unique products</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters">{filterCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => setActiveCategory(category)} key={category}>{category}</button>)}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <a className="catalog-product-card" href={`/catalog-2022-products/${product.image}`} target="_blank" rel="noreferrer" key={`${product.name}-${product.details}-${product.image}`}><div className="catalog-product-image"><img src={`/catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3><span>{product.details || 'Original catalog product specification.'}</span><b>Open product image <i>↗</i></b></div></a>)}</div></div></section></div><Cta /></>;
+  return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero"><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{catalogProducts.length}</strong> unique products</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters">{filterCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => setActiveCategory(category)} key={category}>{category}</button>)}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <a className="catalog-product-card" href={`${BASE}catalog-2022-products/${product.image}`} target="_blank" rel="noreferrer" key={`${product.name}-${product.details}-${product.image}`}><div className="catalog-product-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3><span>{product.details || 'Original catalog product specification.'}</span><b>Open product image <i>↗</i></b></div></a>)}</div></div></section></div><Cta /></>;
 }
 const jobs = [
   { title: 'Sourcing Coordinator', type: 'Full-time · New Jersey / Hybrid', text: 'Keep supplier conversations, product samples and timelines moving from first brief to final shipment.', points: ['Coordinate supplier and client updates', 'Track samples, specifications and deadlines', 'Support purchase orders and quality checks'] },
@@ -72,8 +85,8 @@ const jobs = [
 function JoinUs() { return <><div className="scroll-stage"><section className="join-hero"><div className="container join-hero-grid"><div><Eyebrow>Build with us</Eyebrow><h1>Make good work<br /><em>move further.</em></h1><p>Bring curiosity, care and commercial thinking to a team making global sourcing feel more personal.</p></div><div className="join-hero-image"><img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=85" alt="Team collaborating around a table" /></div></div></section><section className="section-pad careers-intro"><div className="container intro-grid"><Eyebrow>Why NexxGen</Eyebrow><div><h2>Small team. Global work.</h2><p>We are always interested in meeting thoughtful people who enjoy solving practical problems, building relationships and seeing ideas become real products.</p><p>See an opening that sounds like you? Send your CV and a short note to <a href="mailto:sales@ananexxgen.com?subject=Join%20the%20NexxGen%20team">sales@ananexxgen.com</a>.</p></div></div></section></div><section className="section-pad jobs-section"><div className="container"><div className="section-heading"><div><Eyebrow>Current openings</Eyebrow><h2>Find your next<br /><em>good move.</em></h2></div><span className="catalog-2022-count">{jobs.length} open roles</span></div><div className="jobs-list">{jobs.map((job, index) => <article className="job-card" key={job.title}><div className="job-number">0{index + 1}</div><div className="job-main"><p className="job-type">{job.type}</p><h3>{job.title}</h3><p>{job.text}</p><ul>{job.points.map((point) => <li key={point}>{point}</li>)}</ul><a className="text-link" href={`mailto:sales@ananexxgen.com?subject=${encodeURIComponent(`Application: ${job.title}`)}`}>Apply for this role <span>↗</span></a></div></article>)}</div></div></section><Cta /></>; }
 
 function App() {
-  const [path, setPath] = useState(window.location.pathname);
-  useEffect(() => { const onPop = () => setPath(window.location.pathname); window.addEventListener('popstate', onPop); return () => window.removeEventListener('popstate', onPop); }, []);
+  const [path, setPath] = useState(fromBase(window.location.pathname));
+  useEffect(() => { const onPop = () => setPath(fromBase(window.location.pathname)); window.addEventListener('popstate', onPop); return () => window.removeEventListener('popstate', onPop); }, []);
    const page = path === '/about' ? <About /> : path === '/services' ? <Services /> : path === '/products' ? <Products /> : path === '/join-us' ? <JoinUs /> : <Home />;
   useEffect(() => { document.title = `${path === '/' ? 'Global Sourcing' : path.slice(1).replace(/^[a-z]/, (letter) => letter.toUpperCase())} | A&A NexxGen`; }, [path]);
   return <><Header /><main>{page}</main><Footer /></>;
