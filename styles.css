@@ -108,6 +108,7 @@
 .category-card b{margin-top:0}
 .catalog-2022-hero-grid{grid-template-columns:minmax(0,1fr)}
 .catalog-2022-hero{background:linear-gradient(90deg,rgba(240,243,231,.94) 0%,rgba(240,243,231,.82) 45%,rgba(240,243,231,.45) 100%),url('/tr.png') center/cover no-repeat}
+.catalog-2022-hero{background-image:url('/tr.png')!important;background-position:center!important;background-size:cover!important}
 
 /* Mobile menu: rectangular dropdown panel anchored under the pill nav. */
 @media(max-width:800px){
@@ -119,5 +120,7 @@
 }
 
 /* Services hero: photograph removed, solid brand panel instead. */
-.services-hero{background-image:none;background-color:var(--dark)}
-.services-hero::before{background:transparent}
+.services-hero{background-image:url('/services-hero.jpg');background-color:var(--dark);background-size:cover;background-position:center;background-repeat:no-repeat}
+.services-hero::before{background:rgba(16,48,39,.58)}
+.hero:not(.inner-hero){background-image:url('/assets/home-hero.jpg')}
+.inner-hero{background-image:url('/assets/inner-hero.jpg')}
