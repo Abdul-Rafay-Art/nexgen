@@ -133,3 +133,23 @@
 .hero:not(.inner-hero) .hero-copy,.inner-hero .container{padding-top:40px}
 @media(max-width:800px){.about-feature{min-height:620px}}
 @media(max-width:800px){.hero:not(.inner-hero) .hero-copy,.inner-hero .container{padding-top:24px}}
+
+/* Keep the sticky reveal, but do not add an empty trailing stage before capabilities. */
+.scroll-stage:has(> .hero){padding-bottom:0}
+@media(max-width:800px){.scroll-stage:has(> .hero){padding-bottom:0}}
+
+/* Keep category labels readable on every product image. */
+.category-card{position:relative;text-shadow:0 1px 3px rgba(0,0,0,.55)}
+.category-card::after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(180deg,transparent,rgba(8,28,21,.72));pointer-events:none}
+.category-card>span,.category-card>h3,.category-card>b{position:relative;z-index:1}
+
+/* Use a small, intentional type scale for supporting copy and labels. */
+.eyebrow{font-size:12px}
+.hero .eyebrow{text-transform:none;letter-spacing:.04em}
+.button,.text-link{font-size:14px}
+.hero-note{font-size:12px}
+.catalog-product-copy p,.catalog-product-copy b,.job-type{font-size:11px}
+
+/* Make the experience proof point read as part of the CTA group. */
+.hero-note{width:max-content;max-width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,.35);border-radius:10px;background:rgba(8,28,21,.24)}
+.hero:not(.inner-hero) .hero-note{margin:22px auto 0}
