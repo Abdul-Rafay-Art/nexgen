@@ -133,7 +133,6 @@
 .hero:not(.inner-hero) .hero-copy,.inner-hero .container{padding-top:40px}
 @media(max-width:800px){.about-feature{min-height:620px}}
 @media(max-width:800px){.hero:not(.inner-hero) .hero-copy,.inner-hero .container{padding-top:24px}}
-
 /* Keep the sticky reveal, but do not add an empty trailing stage before capabilities. */
 .scroll-stage:has(> .hero){padding-bottom:0}
 @media(max-width:800px){.scroll-stage:has(> .hero){padding-bottom:0}}
@@ -153,3 +152,222 @@
 /* Make the experience proof point read as part of the CTA group. */
 .hero-note{width:max-content;max-width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,.35);border-radius:10px;background:rgba(8,28,21,.24)}
 .hero:not(.inner-hero) .hero-note{margin:22px auto 0}
+.hero:not(.inner-hero) .hero-copy{display:block!important}
+.hero:not(.inner-hero) .hero-copy>.eyebrow{display:none}
+.hero:not(.inner-hero) .hero-copy h1{font-size:0;color:#C9E86A;text-shadow:3px 4px 0 #18352c55}
+.hero:not(.inner-hero) .hero-copy h1::before{content:'A&A NexxGen';display:block;font-size:clamp(46px,6vw,82px);line-height:1.05}
+.hero:not(.inner-hero) .hero-copy h1 em{display:none}
+.hero:not(.inner-hero) .hero-copy .lead{font-size:0;max-width:680px;color:#fff;margin:24px auto}
+.hero:not(.inner-hero) .hero-copy .lead::before{content:'Excellence Through Simplicity, Quality & Feasibility\A\AThe Next Generation of Global Sourcing';display:block;white-space:pre-line;font-size:clamp(16px,2vw,23px);line-height:1.45;font-weight:600}
+.hero:not(.inner-hero) .actions .button-dark{display:none}
+.home-vision-mission{margin:70px calc(50% - 50vw) 0;padding:70px 0 78px;background:transparent;text-align:center;color:#111}.home-vision-cards{display:grid;grid-template-columns:1fr 1fr;gap:30px}.home-vision-mission article{padding:34px 28px;background:transparent;border:1px solid #c4ebed;border-radius:18px;transition:transform .25s,box-shadow .25s}.home-vision-mission article:hover{transform:translateY(-8px);box-shadow:0 18px 35px rgba(24,53,44,.16)}.home-vision-mission h2{font-size:clamp(34px,4vw,54px);font-weight:500}.home-section-rule{width:80px;height:2px;background:#6693ff;margin:18px auto 24px}.home-vision-mission p{max-width:600px;margin:0 auto;color:#273d42}.home-vision-mission span{display:block;color:#5f8fff;font-size:34px;margin-top:25px}
+@media(max-width:800px){.home-vision-mission{margin-top:48px;padding:55px 0}.home-vision-cards{grid-template-columns:1fr;gap:20px}.home-vision-mission article{padding:28px 18px}}
+.home-vision-mission article:hover{background:#C9E86A}
+.careers-reference-hero{position:sticky;top:0;z-index:0;isolation:isolate}.careers-reference-hero~section{position:relative;z-index:1}
+.careers-reference-benefits h2{text-align:center}.careers-benefit-grid article{opacity:0;transform:translateX(-45px);transition:transform .25s ease,box-shadow .25s ease,background-color .25s ease}.careers-benefit-grid.is-visible article{animation:careers-card-in .65s ease both}.careers-benefit-grid.is-visible article:nth-child(2){animation-delay:.12s}.careers-benefit-grid.is-visible article:nth-child(3){animation-delay:.24s}.careers-benefit-grid article:hover{background:#C9E86A;box-shadow:0 16px 28px rgba(31,56,100,.18);transform:translateY(-8px)}
+@keyframes careers-card-in{from{opacity:0;transform:translateX(-45px)}to{opacity:1;transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){.careers-benefit-grid article,.careers-benefit-grid.is-visible article{animation:none;opacity:1;transform:none;transition:none}}
+.careers-reference-positions h2{text-align:center}.positions-table{border:0;background:transparent;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;overflow:visible}.position-heading{display:none}.position-row{min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;padding:30px 22px;text-align:center;background:#fff;border:1px solid #c5ccd5;border-radius:12px;box-shadow:0 8px 22px rgba(31,56,100,.08);transition:transform .25s,box-shadow .25s,border-color .25s}.position-row:first-child{border-top:1px solid #c5ccd5}.position-row>*{padding:0}.position-row strong{font-size:19px;line-height:1.3}.position-row span{color:#43566b}.position-row a{margin-top:14px;padding:12px 20px;min-height:auto;align-self:center;border-radius:999px;background:#2e75b6;color:#fff;transition:background .2s,transform .2s}.position-row:hover{transform:translateY(-7px);border-color:#C9E86A;box-shadow:0 18px 30px rgba(31,56,100,.16)}.position-row a:hover{background:#C9E86A;color:#17231e;transform:translateY(-2px)}
+@media(max-width:900px){.positions-table{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.positions-table{grid-template-columns:1fr}.position-row{padding:26px 20px}}
+.positions-table .position-heading{display:none!important}.positions-table .position-row{min-width:0!important;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:visible}
+.positions-table .position-row{border:0;border-radius:0;background:transparent;box-shadow:none}.positions-table .position-row:hover{border-color:transparent;box-shadow:none;background:transparent;transform:none}
+.positions-table{grid-template-columns:1fr;gap:14px}.positions-table .position-row{flex-direction:row;justify-content:space-between;gap:24px;padding:22px 26px;border:1px solid #c5ccd5;border-radius:8px;background:#fff;text-align:left}.positions-table .position-row strong{flex:1}.positions-table .position-row span{min-width:120px}.positions-table .position-row a{flex:0 0 auto;margin-top:0}.positions-table .position-row:hover{border-color:#C9E86A;background:#fff;transform:translateY(-2px);box-shadow:0 8px 18px rgba(31,56,100,.1)}
+.positions-table{border:0!important;background:transparent!important;padding:0;box-shadow:none}
+@media(max-width:800px){.positions-table .position-row{flex-wrap:wrap;justify-content:flex-start}.positions-table .position-row strong{flex-basis:100%}.positions-table .position-row a{margin-left:auto}}
+@media(max-width:600px){.positions-table .position-row{flex-direction:column;align-items:flex-start;gap:8px}.positions-table .position-row span{min-width:0}.positions-table .position-row a{margin:8px 0 0;align-self:center}}
+
+@media(max-width:800px){
+  .positions-table .position-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;gap:8px 14px}
+  .positions-table .position-row strong{grid-column:1 / -1;flex-basis:auto}
+  .positions-table .position-row span{min-width:0;white-space:nowrap}
+  .positions-table .position-actions{grid-column:1 / -1;justify-content:center;width:100%;margin-top:6px}
+}
+ .position-actions{display:flex;align-items:center;gap:10px;flex:0 0 auto}.position-actions button{border:1px solid #2e75b6;background:#2e75b6;color:#fff;border-radius:999px;padding:11px 17px;font:inherit;font-weight:700;cursor:pointer}.position-actions button:hover{background:#C9E86A;color:#17231e;border-color:#C9E86A}.position-actions a{white-space:nowrap}
+.careers-apply-image{width:100%;overflow:hidden;background:#fff}.careers-apply-image img{display:block;width:100%;height:auto}
+.careers-reference-hero h1{color:#C9E86A}
+.careers-benefit-grid{gap:28px}.careers-benefit-grid article{min-height:230px;padding:32px 28px 30px;text-align:center;background:#1f3864;border:0;border-radius:22px;box-shadow:0 12px 28px rgba(31,56,100,.14);color:#fff}.careers-benefit-grid article::before{position:static;display:flex;width:52px;height:52px;margin:0 auto 24px;align-items:center;justify-content:center;border-radius:50%;background:#C9E86A;color:#1f3864;font-size:18px}.careers-benefit-grid h3{margin:0 0 14px;color:#fff;font-size:22px}.careers-benefit-grid p{max-width:none;margin:0;color:#e4edf7;line-height:1.65}.careers-benefit-grid article:hover{background:#C9E86A;color:#17231e;transform:translateY(-10px);box-shadow:0 20px 36px rgba(31,56,100,.2)}.careers-benefit-grid article:hover::before{background:#1f3864;color:#C9E86A}.careers-benefit-grid article:hover h3,.careers-benefit-grid article:hover p{color:#17231e}
+.careers-benefit-grid article{min-height:150px;padding:28px 24px;text-align:center;background:#f2f2f2;border:1px solid #bfbfbf;border-top:1px solid #bfbfbf;border-radius:0;box-shadow:none;color:inherit}.careers-benefit-grid article::before{display:none}.careers-benefit-grid h3{margin:0 0 12px;color:#1f3864;font-size:21px}.careers-benefit-grid p{max-width:none;margin:0;color:#43566b;line-height:1.6}.careers-benefit-grid article:hover{background:#C9E86A;border-color:#C9E86A;box-shadow:0 16px 28px rgba(31,56,100,.18);transform:translateY(-8px)}.careers-benefit-grid article:hover h3,.careers-benefit-grid article:hover p{color:#17231e}
+.careers-benefit-grid article:hover{transform:translateY(-8px) scale(1.03);position:relative;z-index:2;box-shadow:0 22px 38px rgba(31,56,100,.24)}
+.careers-benefit-grid article{border-radius:28px 0 0 0}
+.careers-reference-benefits{position:relative;isolation:isolate;overflow:hidden;background:#fff}.careers-reference-benefits::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='190' viewBox='0 0 260 190'%3E%3Cg fill='none' stroke='%23c9e86a' stroke-width='2' stroke-linecap='round' opacity='.7'%3E%3Cpath d='M18 44c18-26 47-20 42 5s-35 35-48 12 20-38 46-23'/%3E%3Cpath d='M132 22c18 8 28 26 14 38-16 14-37-4-24-19 11-13 34 2 30 22'/%3E%3Cpath d='M205 105c14-18 42-8 35 13-7 21-37 15-34-5 3-17 29-17 39-2'/%3E%3Cpath d='M62 145c22-10 38 9 25 25-15 18-43 1-30-17'/%3E%3Cpath d='M174 158l8-15 8 15 16 3-12 11 3 16-15-8-15 8 3-16-12-11z'/%3E%3C/g%3E%3Cg fill='%23c9e86a' opacity='.35'%3E%3Ccircle cx='105' cy='105' r='4'/%3E%3Ccircle cx='238' cy='35' r='5'/%3E%3Ccircle cx='25' cy='170' r='3'/%3E%3C/g%3E%3C/svg%3E");background-repeat:repeat;background-size:260px 190px;pointer-events:none}.careers-reference-benefits>.container{position:relative;z-index:1}
+.careers-benefit-grid article{position:relative;min-height:190px;padding:34px 30px;text-align:left;background:#fff;border:0;border-top:4px solid #C9E86A;border-radius:0;box-shadow:0 8px 22px rgba(31,56,100,.08);overflow:hidden}.careers-benefit-grid article::before{content:'01';position:absolute;top:16px;right:22px;color:#dce6f1;font:700 42px/1 Manrope,sans-serif}.careers-benefit-grid article:nth-child(2)::before{content:'02'}.careers-benefit-grid article:nth-child(3)::before{content:'03'}.careers-benefit-grid h3{position:relative;margin:20px 0 14px;font-size:22px}.careers-benefit-grid p{position:relative;max-width:280px;line-height:1.65}.careers-benefit-grid article:hover{background:#C9E86A;border-color:#C9E86A;box-shadow:0 18px 30px rgba(31,56,100,.18);transform:translateY(-8px)}.careers-benefit-grid article:hover::before{color:rgba(31,56,100,.16)}
+ .job-modal-backdrop{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:rgba(12,27,42,.7)}.job-modal{position:relative;width:min(820px,100%);max-height:90vh;overflow:auto;padding:42px;background:#fff;color:#1f3864;border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.3)}.job-modal h2{font:700 clamp(28px,4vw,44px)/1.1 Manrope,sans-serif;margin:8px 0 18px}.job-modal h3{font-size:21px;margin:28px 0 8px}.job-modal p{color:#43566b}.job-modal ul{color:#43566b;padding-left:22px}.job-modal li{margin:6px 0}.job-modal-meta{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:#2e75b6!important}.job-modal-close{position:absolute;top:12px;right:16px;border:0;background:transparent;color:#1f3864;font-size:32px;line-height:1;cursor:pointer}.job-modal .button{margin-top:20px}
+ .resume-upload{display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-top:24px;color:#1f3864;font-weight:700}.resume-upload input{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.resume-upload span{display:inline-flex;padding:11px 17px;border:1px solid #2e75b6;border-radius:999px;color:#1f3864;cursor:pointer}.resume-upload span:hover{background:#C9E86A;border-color:#C9E86A}.resume-upload small{color:#647069;font-weight:400}
+.resume-upload small button{margin-left:8px;padding:6px 12px;border:1px solid #b42318;border-radius:999px;background:#fff;color:#b42318;font:600 12px 'DM Sans',sans-serif;text-decoration:none;cursor:pointer}.resume-upload small button:hover{background:#b42318;color:#fff}
+
+@keyframes position-card-in{from{opacity:0;transform:translateX(42px)}to{opacity:1;transform:translateX(0)}}
+.positions-table.is-visible .position-row:not(.position-heading){animation:position-card-in .6s ease both}
+.positions-table.is-visible .position-row:nth-child(2){animation-delay:.08s}
+.positions-table.is-visible .position-row:nth-child(3){animation-delay:.2s}
+.positions-table.is-visible .position-row:nth-child(4){animation-delay:.32s}
+@media(prefers-reduced-motion:reduce){.positions-table.is-visible .position-row:not(.position-heading){animation:none}}
+
+/* Keep the careers sections static and visually closer together. */
+.careers-reference-benefits{padding-bottom:36px}
+.careers-reference-positions{padding-top:36px}
+.careers-reference-benefits .careers-benefit-grid article:hover{background:#C9E86A;color:#17231e;border-color:transparent;border-top-color:#C9E86A;box-shadow:0 8px 22px rgba(31,56,100,.08);transform:none}
+.careers-reference-benefits .careers-benefit-grid article:hover h3{color:#17231e}
+.careers-reference-benefits .careers-benefit-grid article:hover p{color:#17231e}
+.careers-reference-positions .position-row:hover{border-color:#c5ccd5;background:#fff;box-shadow:0 8px 22px rgba(31,56,100,.08);transform:none}
+.careers-reference-positions .position-actions button:hover{background:#2e75b6;color:#fff;border-color:#2e75b6}
+@media(max-width:800px){.careers-reference-benefits{padding-bottom:28px}.careers-reference-positions{padding-top:28px}}
+
+.careers-benefit-grid{align-items:stretch}
+.careers-benefit-grid article{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:190px}
+
+.about-copy-page{min-height:calc(100vh - 90px);padding-top:105px;background:#f7f7fa;text-align:center;color:#444}
+.about-copy-page h1{font:400 clamp(32px,4vw,40px)/1.1 'DM Sans',sans-serif;color:#111;margin:0}
+.about-copy-rule{width:112px;height:1px;background:#4263ff;margin:26px auto 22px}
+.about-copy-text{max-width:1000px;margin:0 auto;font-size:15px;line-height:1.55}
+.about-copy-text p{margin:0 0 25px}
+.about-copy-text p:last-child{margin-bottom:0}
+.about-why{background:#fff;padding-top:30px}
+.about-why-grid{display:grid;grid-template-columns:minmax(260px,34%) 1fr;gap:44px;align-items:center}
+.about-why-image{height:410px;overflow:hidden;background:transparent}
+.about-why-image img,.about-why-image iframe{display:block;width:100%;height:100%;border:0;object-fit:cover}
+.about-why-copy h2{font:400 clamp(28px,3.2vw,42px)/1.1 'DM Sans',sans-serif;color:#111;margin:0}
+.about-why-copy .about-copy-rule{margin:25px 0 20px}
+.about-why-copy ul{list-style:none;padding:0;margin:0;color:#444;font-size:13px;line-height:1.45}
+.about-why-copy li{position:relative;padding-left:18px;margin:7px 0}
+.about-why-copy li::before{content:'✓';position:absolute;left:0;color:#17231e;font-weight:700}
+.about-copy-rule{display:none}
+.about-copy-page{min-height:auto;padding:58px 0 52px}
+.about-copy-text p{margin-bottom:16px}
+.about-scroll-stage{padding-bottom:0}
+@media(max-width:800px){.about-copy-page{padding:58px 0 45px}.about-copy-text{font-size:14px}.about-copy-text p{margin-bottom:16px}.about-why-grid{grid-template-columns:1fr;gap:30px}.about-why-image{height:280px}.about-why-copy .about-copy-rule{margin-left:0}}
+
+@keyframes intro-text-from-left{from{opacity:0;transform:translateX(-55px)}to{opacity:1;transform:translateX(0)}}
+.scroll-stage>.intro .intro-feature>.eyebrow,.scroll-stage>.intro .intro-copy{opacity:1}
+.scroll-stage>.intro .intro-feature.is-visible>.eyebrow,.scroll-stage>.intro .intro-feature.is-visible .intro-copy{animation:intro-text-from-left .7s ease both}
+.scroll-stage>.intro .intro-feature.is-visible .intro-copy{animation-delay:.12s}
+@media(prefers-reduced-motion:reduce){.scroll-stage>.intro .intro-feature>.eyebrow,.scroll-stage>.intro .intro-copy{opacity:1}.scroll-stage>.intro .intro-feature.is-visible>.eyebrow,.scroll-stage>.intro .intro-feature.is-visible .intro-copy{animation:none}}
+.about-feature-grid .eyebrow,.about-feature-copy{opacity:1}
+.about-feature-grid.is-visible .eyebrow,.about-feature-grid.is-visible .about-feature-copy{animation:intro-text-from-left .7s ease both}
+.about-feature-grid.is-visible .about-feature-copy{animation-delay:.12s}
+@media(prefers-reduced-motion:reduce){.about-feature-grid.is-visible .eyebrow,.about-feature-grid.is-visible .about-feature-copy{animation:none}}
+.category-card.card-house,.category-card.card-garden,.category-card.card-plastic{background-image:none;isolation:isolate}
+.category-card.card-house::before,.category-card.card-garden::before,.category-card.card-plastic::before{content:"";position:absolute;inset:0;z-index:-2;background-position:center;background-size:cover;transform:scale(1);transition:transform .6s cubic-bezier(.22,.61,.36,1);}
+.category-card.card-house::before{background-image:url('/houseware.png')}
+.category-card.card-garden::before{background-image:url('/gardem.png')}
+.category-card.card-plastic::before{background-image:url('/plastic.png')}
+.category-card.card-house:hover::before,.category-card.card-garden:hover::before,.category-card.card-plastic:hover::before{transform:scale(1.1)}
+@media(max-width:800px){.position-actions{width:100%;justify-content:center;flex-wrap:wrap}.job-modal{padding:34px 22px 26px}.job-modal h3{font-size:19px}}
+
+.careers-reference-hero{aspect-ratio:1672 / 941;min-height:0;padding:35px 0;background:linear-gradient(rgba(17,42,70,.72),rgba(17,42,70,.72)),url('/wd.png') center/cover;text-align:center;color:#fff;display:flex;align-items:center}.careers-reference-hero .container{max-width:920px}.careers-reference-hero h1{font:700 clamp(38px,5vw,64px)/1.05 Manrope,sans-serif;margin:0 0 24px}.careers-reference-hero p{max-width:780px;margin:12px auto;color:#f4f8ff;font-size:17px}.careers-reference-benefits{background:#fff}.careers-reference-benefits h2,.careers-reference-positions h2,.careers-reference-apply h2{font:700 clamp(32px,4vw,48px)/1.1 Manrope,sans-serif;color:#1f3864;margin:0 0 34px}.careers-benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.careers-benefit-grid article{padding:28px 24px;text-align:center;background:#f2f2f2;border:1px solid #bfbfbf;min-height:150px}.careers-benefit-grid h3{font-size:21px;color:#1f3864;margin-bottom:12px}.careers-benefit-grid p{margin:0;color:#43566b}.careers-reference-positions{background:#f7f8fa}.positions-table{border:1px solid #bfbfbf;background:#fff;overflow-x:auto}.position-row{display:grid;grid-template-columns:minmax(280px,2.4fr) 1fr 1fr 1.35fr 150px;align-items:center;border-top:1px solid #bfbfbf;min-width:900px}.position-row:first-child{border-top:0}.position-row>*{padding:19px 18px}.position-heading{background:#1f3864;color:#fff;border-top:0}.position-row a{align-self:stretch;display:flex;align-items:center;justify-content:center;background:#2e75b6;color:#fff;font-weight:700}.position-row strong{color:#1f3864}.position-heading strong{color:#fff}.careers-reference-apply{background:#dce6f1;text-align:center}.careers-reference-apply .container{max-width:820px}.careers-reference-apply p{font-size:17px;color:#344b61}.careers-reference-apply a{color:#1f3864;font-weight:700;text-decoration:underline}
+@media(max-width:800px){.careers-reference-hero{aspect-ratio:auto;min-height:520px;padding:90px 0 55px}.careers-reference-hero p{font-size:15px}.careers-benefit-grid{grid-template-columns:1fr}.careers-reference-benefits h2,.careers-reference-positions h2,.careers-reference-apply h2{font-size:34px}.position-row>*{padding:16px 14px}}
+
+/* Keep imported catalog copy from making cards uneven or unreadable. */
+.catalog-product-copy h3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;min-height:3.24em}
+.catalog-product-copy>span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+@media(max-width:800px){.catalog-product-copy>span{font-size:11px;min-height:62px}}
+.careers-reference-benefits::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='220' viewBox='0 0 300 220'%3E%3Cg fill='none' stroke='%231f3864' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='.16'%3E%3Crect x='24' y='42' width='54' height='38' rx='5'/%3E%3Cpath d='M39 42v-9h24v9M18 57h66M51 57v8'/%3E%3Crect x='135' y='28' width='42' height='55' rx='3'/%3E%3Cpath d='M145 42h22M145 52h22M145 62h14M151 28v-6h10v6'/%3E%3Ccircle cx='242' cy='45' r='12'/%3E%3Cpath d='M221 82c2-18 40-18 42 0M242 57v13M235 66l7 7 7-7'/%3E%3Cpath d='M24 151l17-17 12 12 25-27M70 119h11v11'/%3E%3Cpath d='M139 145c8-8 17-8 25 0l10 10c5 5 13 5 18 0l8-8-18-18c-5-5-12-5-17 0l-8 8'/%3E%3Cpath d='M139 145l-8-8c-5-5-12-5-17 0l-5 5 18 18c5 5 13 5 18 0'/%3E%3Cpath d='M238 139l5 10 11 1-8 8 2 11-10-5-10 5 2-11-8-8 11-1z'/%3E%3C/g%3E%3Cg fill='%23c9e86a' opacity='.42'%3E%3Ccircle cx='104' cy='31' r='5'/%3E%3Ccircle cx='276' cy='112' r='4'/%3E%3Ccircle cx='94' cy='184' r='4'/%3E%3C/g%3E%3C/svg%3E")}
+
+/* Homepage final pass: use the authored hero copy instead of the temporary text replacement. */
+.scroll-stage > .hero:not(.inner-hero) .hero-copy > .eyebrow{display:block}
+.scroll-stage > .hero:not(.inner-hero) .hero-copy h1{font-size:clamp(40px,5vw,68px);color:#fff;text-shadow:none}
+.scroll-stage > .hero:not(.inner-hero) .hero-copy h1::before{content:none}
+.scroll-stage > .hero:not(.inner-hero) .hero-copy h1 em{display:inline;color:var(--lime)}
+.scroll-stage > .hero:not(.inner-hero) .hero-copy .lead{font-size:16px;max-width:610px;color:#edf2e9;margin:22px auto}
+.scroll-stage > .hero:not(.inner-hero) .hero-copy .lead::before{content:none}
+.scroll-stage > .hero:not(.inner-hero) .hero-copy .actions .button-dark{display:inline-flex}
+.scroll-stage > .hero:not(.inner-hero) .hero-copy .hero-note{margin:22px auto 0}
+.scroll-stage > .hero:not(.inner-hero) .hero-visual{display:none}
+.home-vision-mission{margin-top:64px}
+@media(max-width:800px){
+  .scroll-stage > .hero:not(.inner-hero) .hero-copy h1{font-size:clamp(36px,10vw,52px)}
+  .scroll-stage > .hero:not(.inner-hero) .hero-copy .lead{font-size:15px}
+  .home-vision-mission{margin-top:44px}
+}
+
+/* Category cards: dark product-card treatment with a technical grid border. */
+.category-grid .category-card{
+  position:relative;
+  height:342px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:14px 14px 18px;
+  overflow:hidden;
+  isolation:isolate;
+  border:1px solid #d9dce2;
+  border-radius:8px 8px 22px 8px;
+  background-color:#fff;
+  background-image:none;
+  box-shadow:0 10px 24px rgba(10,12,18,.12);
+  text-shadow:none;
+}
+.category-grid .category-card::before{
+  inset:14px 14px 102px;
+  z-index:0;
+  border-radius:7px 7px 2px 2px;
+  transform:none;
+}
+.category-grid .category-card::after{
+  inset:14px 14px 102px;
+  z-index:1;
+  border-radius:7px 7px 2px 2px;
+  background:linear-gradient(180deg,transparent 46%,rgba(8,10,15,.72));
+}
+.category-grid .category-card:hover::before{transform:scale(1.04)}
+.category-grid .category-card>span,
+.category-grid .category-card>h3,
+.category-grid .category-card>b{z-index:2}
+.category-grid .category-card>span{
+  display:none;
+  align-self:flex-end;
+  order:1;
+  margin:0 0 7px;
+  padding:3px 8px;
+  border:1px solid #22d8f5;
+  border-radius:4px;
+  background:#10141d;
+  color:#22d8f5;
+  font:700 10px/1 'DM Sans',sans-serif;
+}
+.category-grid .category-card>h3{
+  order:2;
+  align-self:stretch;
+  margin:0;
+  padding:11px 0 9px;
+  border-top:1px solid #e3e5e9;
+  color:#17231e;
+  font:700 15px/1.25 'DM Sans',sans-serif;
+  letter-spacing:0;
+}
+.category-grid .category-card>b{
+  order:3;
+  align-self:flex-start;
+  color:#C9E86A;
+  font-size:12px;
+}
+.category-grid .category-card>b i{color:#17231e;font-style:normal}
+.category-grid .category-card.card-seasonal{background-image:url('/seasonal-card.png');background-repeat:no-repeat;background-position:14px 14px;background-size:calc(100% - 28px) 226px}
+.category-grid .category-card.card-seasonal::before{display:none}
+.category-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.seasonal-page{min-height:100vh;padding-top:145px;background:#f7f8f1}
+.seasonal-heading{margin-bottom:34px}
+.seasonal-heading h1{font:700 clamp(34px,5vw,62px)/1.05 Manrope,sans-serif;letter-spacing:-.05em;color:var(--dark)}
+.seasonal-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.seasonal-gallery img{display:block;width:100%;height:270px;object-fit:contain;padding:12px;background:#fff;border:1px solid #d9dce2;border-radius:8px;box-shadow:0 8px 20px rgba(10,12,18,.08)}
+@media(max-width:1050px){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.seasonal-gallery{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:800px){
+  .category-grid .category-card{height:300px;padding:12px 12px 16px}
+  .category-grid .category-card::before,.category-grid .category-card::after{inset:12px 12px 94px}
+  .category-grid .category-card.card-seasonal{background-position:12px 12px;background-size:calc(100% - 24px) 194px}
+  .seasonal-page{padding-top:120px}
+  .seasonal-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .seasonal-gallery img{height:220px}
+}
+
+/* Keep the homepage hero tall enough for its copy and experience badge. */
+.scroll-stage > .hero:not(.inner-hero){min-height:max(760px,100svh);padding-bottom:150px;overflow:visible}
+.scroll-stage > .hero:not(.inner-hero){position:sticky!important;top:0!important;z-index:0!important}
+.scroll-stage > .intro{position:sticky!important;top:0!important;z-index:4!important}
+.scroll-stage > .hero:not(.inner-hero){padding-top:125px;padding-bottom:80px}
+.scroll-stage > .hero:not(.inner-hero) .hero-copy h1{font-size:clamp(38px,4.5vw,60px)}
+.scroll-stage > .hero:not(.inner-hero) .hero-copy .lead{margin:16px auto;font-size:15px;line-height:1.4}
+.scroll-stage > .hero:not(.inner-hero) .actions{margin:18px 0;gap:20px}
+.scroll-stage > .hero:not(.inner-hero) .hero-note{margin-top:14px;padding:8px 12px}
+.scroll-stage > .hero:not(.inner-hero) .hero-note strong{font-size:30px}
+@media(max-width:800px){.scroll-stage > .hero:not(.inner-hero){min-height:650px;padding-bottom:100px}}
