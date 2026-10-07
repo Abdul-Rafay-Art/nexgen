@@ -23,14 +23,36 @@ function navigate(path) {
 }
 
 function Link({ href, children, className = '' }) {
-  const internal = href.startsWith('/');
-  return <a className={className} href={internal ? toBase(href) : href} onClick={internal ? (event) => { event.preventDefault(); navigate(href); } : undefined}>{children}</a>;
+  const target = Array.isArray(children) && children[0]?.trim?.() === 'Discover NexxGen' ? '/products' : href;
+  const internal = target.startsWith('/');
+  return <a className={className} href={internal ? toBase(target) : target} onClick={internal ? (event) => { event.preventDefault(); navigate(target); } : undefined}>{children}</a>;
 }
 
 function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [lightSurface, setLightSurface] = useState(false);
+  const headerRef = useRef(null);
   const currentPath = fromBase(window.location.pathname);
   const itemClass = (path) => currentPath === path ? 'active' : '';
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 20);
+      const header = headerRef.current;
+      const previousPointerEvents = header?.style.pointerEvents;
+      if (header) header.style.pointerEvents = 'none';
+      const target = document.elementFromPoint(window.innerWidth / 2, 70);
+      if (header) header.style.pointerEvents = previousPointerEvents || '';
+      const section = target?.closest('section');
+      const color = section ? getComputedStyle(section).color : '';
+      const match = color.match(/\d+/g);
+      const brightness = match ? Number(match[0]) * .299 + Number(match[1]) * .587 + Number(match[2]) * .114 : 255;
+      setLightSurface(brightness < 170);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
   useEffect(() => {
     if (!open) return undefined;
     const onDown = (event) => { if (!event.target || !event.target.closest || !event.target.closest('.site-header')) setOpen(false); };
@@ -39,12 +61,12 @@ function Header() {
     document.addEventListener('keydown', onKey);
     return () => { document.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey); };
   }, [open]);
-  return <header className={`site-header ${open ? 'menu-open' : ''}`}><div className="container nav-wrap">
-    <Link className="brand" href="/"><img src={logo} alt="A&A NexxGen" /></Link>
+  return <header ref={headerRef} className={`site-header ${open ? 'menu-open' : ''} ${scrolled ? 'scrolled' : ''} ${lightSurface ? 'light-surface' : ''}`}><div className="container nav-wrap">
+     <Link className="brand" href="/" aria-label="A&A NexxGen home"><span className="brand-mark"><img src={logo} alt="" /></span><span className="brand-name">NEXXGEN</span></Link>
     <button className="menu-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>Menu</button>
      <nav className={`main-nav ${open ? 'open' : ''}`} onClick={(event) => { if (event.target.closest('a')) setOpen(false); }}>
-         <Link className={itemClass('/')} href="/">Home</Link><Link className={itemClass('/about')} href="/about">About</Link><Link className={itemClass('/services')} href="/services">Services</Link><Link className={itemClass('/products')} href="/products">Products</Link><Link className={itemClass('/join-us')} href="/join-us">Careers</Link>
-    </nav>
+          <Link className={itemClass('/')} href="/">Home</Link><Link className={itemClass('/about')} href="/about">About</Link><Link className={itemClass('/services')} href="/services">Services</Link><Link className={itemClass('/products')} href="/products">Products</Link><Link className={itemClass('/join-us')} href="/join-us">Careers</Link>
+     </nav><div className="header-tools" aria-label="Account tools"><span aria-hidden="true">♧</span><span aria-hidden="true">♙</span></div>
   </div></header>;
 }
 
@@ -90,7 +112,7 @@ const normalizedCatalogProducts = catalogProducts.map((product) => {
   if (/bar mop/i.test(name)) category = 'Bar Mops';
   else if (/\bmop\b/i.test(name)) category = 'Mops';
   else if (/kitchen towel|dish cloth/i.test(name)) category = 'Kitchen Towel';
-  else if (/wash cloth|hand towel/i.test(name)) category = 'Wash Cloths';
+  else if (/wash cloth|hand towel|\bcloths?\b/i.test(name)) category = 'Wash Cloths';
   else if (/bath towel/i.test(name)) category = 'Bath Towels';
   else if (/planter/i.test(name)) category = 'Planters';
   let image = category === 'Rubbing Alcohol' ? 'image196.jpeg' : imageOverrides[name] || product.image;
@@ -105,7 +127,54 @@ const normalizedCatalogProducts = catalogProducts.map((product) => {
     details: product.details?.trim() || 'Specifications available on request.',
     image,
   };
-});
+}).filter((product) => ![
+  '16 " RECHARGEABLE STAND FAN',
+  '13.77 (DIA) X 10.83 Planter With Tray',
+].includes(product.name) && ![
+  'image314.jpeg',
+  'image380.jpeg',
+  'image414.jpeg',
+  'image418.jpeg',
+  'image462.jpeg',
+  'image82.jpeg',
+].includes(product.image) && !/KITCHEN TOWEL HALF STRIPE.*KITCHEN TOWEL/i.test(product.name));
+
+const productFamilyName = (name) => name
+  .replace(/^\d+\s*CT\s+/i, '')
+  .replace(/^\d+\s*CUP\s+/i, '')
+  .replace(/^(WHITE|BLUE|GREEN|RED)\s+TENT\b.*$/i, 'TENT')
+  .replace(/^CAMPING CHAIR\s*-\s*(RED|BLUE|BLACK|GREEN)(?:\s*-\s*VARIANT\s*\d+)?$/i, 'CAMPING CHAIR')
+  .replace(/^PLASTIC CHAIR\s*-\s*(WHITE|BEIGE|CHOCOLATE)$/i, 'PLASTIC CHAIR')
+  .replace(/^REGULAR BEACH CHAIR\s+.+\s+FLAG$/i, 'REGULAR BEACH CHAIR')
+  .replace(/^\d+\s*["']{1,2}\s*STAND FAN\s*-\s*\d+$/i, 'STAND FAN')
+  .replace(/^\d+\s*["']{1,2}\s*INDUSTRIAL\s+(?:STAND|WALL)\s+FAN.*$/i, 'INDUSTRIAL FAN')
+  .replace(/^(?:\d+\s*LBS\s*)+EPSOM SALT.*$/i, 'EPSOM SALT')
+  .replace(/^.*RUBBING ALCOHOL.*$/i, 'RUBBING ALCOHOL')
+  .replace(/^ALCOHOL\s*-\s*VARIANT.*$/i, 'RUBBING ALCOHOL')
+  .replace(/^.*PLANTER.*$/i, 'PLANTERS')
+  .replace(/^.*MOP.*$/i, 'MOPS')
+  .replace(/^.*BATH TOWEL.*$/i, 'BATH TOWELS')
+  .replace(/^.*KITCHEN TOWEL.*$/i, 'KITCHEN TOWELS')
+  .replace(/^.*HAND TOWEL.*$/i, 'HAND TOWELS')
+  .replace(/^.*WASH CLOTH.*$/i, 'WASH CLOTHS')
+  .replace(/^.*CLOTHS.*$/i, 'WASH CLOTHS')
+  .replace(/\s*-\s*VARIANT\s+\d+$/i, '')
+  .replace(/\s*-\s*(BLUE|RED|CYAN)$/i, '')
+  .replace(/\s+\d+(?:\.\d+)?\s*[xX×]\s*\d+(?:\.\d+)?\s*(?:CM|INCH)?$/i, '')
+  .trim();
+
+const groupedCatalogProducts = Object.values(normalizedCatalogProducts.reduce((groups, product) => {
+  const key = `${product.category}:${productFamilyName(product.name)}`;
+  if (!groups[key]) groups[key] = { ...product, names: [], detailsList: [], variants: [] };
+  groups[key].variants.push(product);
+  if (!groups[key].names.includes(product.name)) groups[key].names.push(product.name);
+  if (product.details && !groups[key].detailsList.includes(product.details)) groups[key].detailsList.push(product.details);
+  return groups;
+}, {})).map((product) => ({
+  ...product,
+  name: productFamilyName(product.names[0]),
+  details: product.detailsList.join(' | '),
+}));
 
 const CategoryCards = ({ all = false }) => <><div className="category-grid">{(all ? [...categories, ['card-house', 'Seasonal products'], ['card-garden', 'General merchandise'], ['card-plastic', 'Medical supplies']] : categories).map(([image, title], index) => <Link className={`category-card ${image}`} href={image === 'card-seasonal' ? '/seasonal-products' : '/products'} key={title}><span>0{index + 1}</span><h3>{title}</h3><b>{all ? 'Discuss your needs' : 'Explore'} <i>↗</i></b></Link>)}</div><section className="home-vision-mission"><div className="container"><div className="home-vision-cards"><article><h2>Our Vision</h2><div className="home-section-rule" /><p>To make global sourcing simpler, more accessible, and more innovative for businesses worldwide.</p><span>✧</span></article><article><h2>Our Mission</h2><div className="home-section-rule" /><p>To connect businesses with reliable suppliers, quality products, and personal support from sourcing to delivery.</p><span>✧</span></article></div></div></section></>;
 
@@ -121,7 +190,6 @@ function SeasonalProducts() {
 
 function InnerHero({ eyebrow, children, text, style, className = '' }) { return <section className={`hero inner-hero ${className}`} style={style}><div className="container"><Eyebrow>{eyebrow}</Eyebrow><h1>{children}</h1><p className="lead">{text}</p></div></section>; }
 function Cta() { return <section className="cta-band"><div className="container cta-content"><div><Eyebrow>Let’s make something work</Eyebrow><h2>Have a product in mind?</h2></div><Button className="button-light">Tell us about it</Button></div></section>; }
-
 const whyChoosePoints = [
   "Our core function is to identify qualified suppliers, based on the client's needs and technical requirements.",
   'We focus on sustainable product offerings.',
@@ -133,7 +201,8 @@ const whyChoosePoints = [
   'We assess the needs of our clients and find factories and suppliers that can best meet their needs, ultimately resulting in a purchase order.',
   'We can help with factory audits, quality inspections, contracts management, quality assurance, and day-to-day administration.',
 ];
-function About() { return <><div className="about-scroll-stage"><InnerHero eyebrow="Who we are" text="A&A NexxGen is a family-owned sourcing partner helping businesses find the right products, people and possibilities around the world.">Personal attention.<br /><em>Global reach.</em></InnerHero><section className="section-pad about-feature"><div className="container about-feature-grid"><Eyebrow>Why NexxGen</Eyebrow><div className="about-feature-copy"><h2>Relationships, not transactions.</h2><p>We put our experience and network behind every order, no matter the size. Our team works with qualified suppliers across key sourcing markets and stays close to your project from the first conversation to final delivery.</p><p>We help clients build better product mixes, manage quality and create long-term supply relationships.</p><Button>Work with us</Button></div></div></section></div><section className="about-copy-page section-pad"><div className="container"><h1>About us</h1><div className="about-copy-rule" /><div className="about-copy-text"><p>We are A &amp; A NexxGen and we are here to help you source the highest quality products for the best possible price from around the globe. We have over 15 years of experience in global sourcing and we believe in putting our 100% behind every order for every client, no matter the size. We are in the business of long-term, mutually beneficial relationships, not just sourcing products.</p><p>We are a family owned firm, committed to providing our clients the best services in the market. We are a small firm, but we have worked extremely hard to establish a strong network of vendors from across the globe, and we provide our clients personalized support.</p><p>A &amp; A makes sure that we do our homework for every single order and ethically source the highest quality products. But we do not just stop at that, we want to help your business grow and we are here to help you identify the hottest items on the market for your business. We will provide you consultation on your product mix and pricing structure to help your business benefit on an ongoing basis from a relationship with us.</p><p>We have a wide range of products and services available. Please feel free to contact us for more details or browse through our website for further insight.</p></div></div></section><section className="about-why section-pad"><div className="container about-why-grid"><div className="about-why-image"><img src={`${BASE}12.jpg`} alt="A&A NexxGen sourcing team collaborating" /></div><div className="about-why-copy"><h2>Why Choose A &amp; A NexxGen?</h2><div className="about-copy-rule" /><ul>{whyChoosePoints.map((point) => <li key={point}>{point}</li>)}</ul></div></div></section></>; }
+
+ function About() { return <><div className="about-scroll-stage"><InnerHero eyebrow="Who we are" text="A&A NexxGen is a family-owned sourcing partner helping businesses find the right products, people and possibilities around the world.">Personal attention.<br /><em>Global reach.</em></InnerHero><section className="section-pad about-feature"><div className="container about-feature-grid"><Eyebrow>Why NexxGen</Eyebrow><div className="about-feature-copy"><h2>Relationships, not transactions.</h2><p>We put our experience and network behind every order, no matter the size. Our team works with qualified suppliers across key sourcing markets and stays close to your project from the first conversation to final delivery.</p><p>We help clients build better product mixes, manage quality and create long-term supply relationships.</p><Button>Work with us</Button></div></div></section></div><section className="about-copy-page section-pad"><div className="container"><h1>About us</h1><div className="about-copy-rule" /><div className="about-copy-text"><p>We are A &amp; A NexxGen and we are here to help you source the highest quality products for the best possible price from around the globe. We have over 15 years of experience in global sourcing and we believe in putting our 100% behind every order for every client, no matter the size. We are in the business of long-term, mutually beneficial relationships, not just sourcing products.</p><p>We are a family owned firm, committed to providing our clients the best services in the market. We are a small firm, but we have worked extremely hard to establish a strong network of vendors from across the globe, and we provide our clients personalized support.</p><p>A &amp; A makes sure that we do our homework for every single order and ethically source the highest quality products. But we do not just stop at that, we want to help your business grow and we are here to help you identify the hottest items on the market for your business. We will provide you consultation on your product mix and pricing structure to help your business benefit on an ongoing basis from a relationship with us.</p><p>We have a wide range of products and services available. Please feel free to contact us for more details or browse through our website for further insight.</p></div></div></section></>; }
 
 const services = ['Comprehensive sourcing', 'Product consultancy', 'Private labeling', 'Quality assurance', 'Risk management', 'Logistics'];
 const serviceImages = [
@@ -151,16 +220,156 @@ function Products() {
   const visibleProducts = normalizedCatalogProducts.filter((product) => product.category === activeCategory);
   return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero" style={{ backgroundImage: `linear-gradient(90deg,rgba(240,243,231,.94) 0%,rgba(240,243,231,.82) 45%,rgba(240,243,231,.45) 100%), url(${BASE}tr.png)`, backgroundPosition: 'center,center', backgroundSize: 'auto,cover', backgroundRepeat: 'no-repeat,no-repeat' }}><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{catalogProducts.length}</strong> unique products</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters">{filterCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => setActiveCategory(category)} key={category}>{category}</button>)}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <a className="catalog-product-card" href={`${BASE}catalog-2022-products/${product.image}`} target="_blank" rel="noreferrer" key={`${product.name}-${product.details}-${product.image}`}><div className="catalog-product-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3><span>{product.details || 'Original catalog product specification.'}</span><b>Open product image <i>↗</i></b></div></a>)}</div></div></section></div><Cta /></>;
 }
+function ProductsPage() {
+  const filterCategories = [...new Set(groupedCatalogProducts.map((product) => product.category))];
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [showAllFilters, setShowAllFilters] = useState(false);
+  const visibleProducts = activeCategory === 'All'
+    ? groupedCatalogProducts
+    : groupedCatalogProducts.filter((product) => product.category === activeCategory);
+  const visibleCategories = showAllFilters ? filterCategories : filterCategories.slice(0, 3);
+
+  return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero catalog-hero-centered" style={{ backgroundImage: `linear-gradient(90deg,rgba(240,243,231,.94),rgba(240,243,231,.72)), url(${BASE}tr.png)` }}><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{groupedCatalogProducts.length}</strong> unique products</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters"><button className={activeCategory === 'All' ? 'selected' : ''} onClick={() => setActiveCategory('All')}>All products</button>{visibleCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => setActiveCategory(category)} key={category}>{category}</button>)}{filterCategories.length > 3 && <button className="filter-more" type="button" onClick={() => setShowAllFilters(!showAllFilters)}>{showAllFilters ? 'See less' : 'See more'}</button>}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <a className="catalog-product-card" href={`${BASE}catalog-2022-products/${product.image}`} target="_blank" rel="noreferrer" key={`${product.name}-${product.image}`}><div className="catalog-product-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3><span>{product.details || 'Original catalog product specification.'}</span><b>Open product image <i>↗</i></b></div></a>)}</div></div></section></div><Cta /></>;
+}
+
+function ProductsCatalogPage() {
+  const filterCategories = [...new Set(groupedCatalogProducts.map((product) => product.category))];
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [showAllFilters, setShowAllFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const visibleProducts = activeCategory === 'All' ? groupedCatalogProducts : groupedCatalogProducts.filter((product) => product.category === activeCategory);
+  const visibleCategories = showAllFilters ? filterCategories : filterCategories.slice(0, 3);
+
+  useEffect(() => {
+    if (!selectedProduct) return undefined;
+    const closeOnEscape = (event) => { if (event.key === 'Escape') setSelectedProduct(null); };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [selectedProduct]);
+
+  return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero" style={{ backgroundImage: `linear-gradient(90deg,rgba(240,243,231,.76),rgba(240,243,231,.34)), url(${BASE}tr.png)` }}><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{groupedCatalogProducts.length}</strong> unique products</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters"><button className={activeCategory === 'All' ? 'selected' : ''} onClick={() => setActiveCategory('All')}>All products</button>{visibleCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => setActiveCategory(category)} key={category}>{category}</button>)}{filterCategories.length > 3 && <button className="filter-more" type="button" onClick={() => setShowAllFilters(!showAllFilters)}>{showAllFilters ? 'See less' : 'See more'}</button>}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <article className="catalog-product-card" role="button" tabIndex="0" onClick={() => setSelectedProduct(product)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') setSelectedProduct(product); }} key={`${product.name}-${product.image}`}><div className="catalog-product-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3><span>{product.variants.length} options available</span></div></article>)}</div></div></section></div>{selectedProduct && <div className="product-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedProduct(null); }}><section className="product-modal" role="dialog" aria-modal="true" aria-labelledby="product-modal-title"><button className="product-modal-close" type="button" aria-label="Close product options" onClick={() => setSelectedProduct(null)}>×</button><p className="eyebrow">{selectedProduct.category}</p><h2 id="product-modal-title">{selectedProduct.name}</h2><div className="product-variants">{selectedProduct.variants.map((variant) => <article key={`${variant.name}-${variant.image}`}><img src={`${BASE}catalog-2022-products/${variant.image}`} alt="" /><div><h3>{variant.name}</h3><p>{variant.details}</p></div></article>)}</div></section></div>}</>;
+}
+
+function LegacyProductsDetailsPage() {
+  const filterCategories = [...new Set(groupedCatalogProducts.map((product) => product.category))];
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [showAllFilters, setShowAllFilters] = useState(false);
+  const visibleProducts = activeCategory === 'All' ? groupedCatalogProducts : groupedCatalogProducts.filter((product) => product.category === activeCategory);
+  const visibleCategories = showAllFilters ? filterCategories : filterCategories.slice(0, 3);
+
+  return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero" style={{ backgroundImage: `linear-gradient(90deg,rgba(240,243,231,.76),rgba(240,243,231,.34)), url(${BASE}tr.png)` }}><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{groupedCatalogProducts.length}</strong> unique products</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters"><button className={activeCategory === 'All' ? 'selected' : ''} onClick={() => setActiveCategory('All')}>All products</button>{visibleCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => setActiveCategory(category)} key={category}>{category}</button>)}{filterCategories.length > 3 && <button className="filter-more" type="button" onClick={() => setShowAllFilters(!showAllFilters)}>{showAllFilters ? 'See less' : 'See more'}</button>}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <article className="catalog-product-card product-detail-card" role="button" tabIndex="0" onClick={() => navigate(`/products/${encodeURIComponent(product.image)}`)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') navigate(`/products/${encodeURIComponent(product.image)}`); }} key={`${product.name}-${product.image}`}><div className="catalog-product-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3></div></article>)}</div></div></section></div></>;
+}
+
+const towelCategories = new Set(['Bath Towels', 'Wash Cloths', 'Kitchen Towel']);
+const towelProducts = groupedCatalogProducts.filter((product) => towelCategories.has(product.category));
+const combinedTowelProduct = {
+  ...towelProducts[0],
+  category: 'Towels',
+  name: 'Towels',
+  details: 'Bath towels, wash cloths and kitchen towels.',
+  image: 'image378.png',
+  variants: towelProducts.flatMap((product) => product.variants).sort((a, b) => Number(b.image === 'image378.png') - Number(a.image === 'image378.png')),
+};
+
+function ProductsDetailsPage() {
+  const nonTowelProducts = groupedCatalogProducts.filter((product) => !towelCategories.has(product.category));
+  const displayProducts = [...nonTowelProducts, combinedTowelProduct];
+  const filterCategories = [...new Set(displayProducts.map((product) => product.category))];
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [showAllFilters, setShowAllFilters] = useState(false);
+  const [showTowelGallery, setShowTowelGallery] = useState(false);
+  const visibleProducts = activeCategory === 'All'
+    ? displayProducts
+    : displayProducts.filter((product) => product.category === activeCategory);
+  const visibleCategories = showAllFilters ? filterCategories : filterCategories.slice(0, 3);
+  const towelGalleryImages = [...new Map(combinedTowelProduct.variants.map((variant) => [variant.image, variant])).values()];
+
+  return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero" style={{ backgroundImage: `linear-gradient(90deg,rgba(240,243,231,.76),rgba(240,243,231,.34)), url(${BASE}tr.png)` }}><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{displayProducts.length}</strong> product families</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters"><button className={activeCategory === 'All' ? 'selected' : ''} onClick={() => setActiveCategory('All')}>All products</button>{visibleCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => { setActiveCategory(category); setShowTowelGallery(false); }} key={category}>{category}</button>)}{filterCategories.length > 3 && <button className="filter-more" type="button" onClick={() => setShowAllFilters(!showAllFilters)}>{showAllFilters ? 'See less' : 'See more'}</button>}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <article className={`catalog-product-card product-detail-card ${product.category === 'Towels' ? 'towels-product-card' : ''}`} role="button" tabIndex="0" onClick={() => product.category === 'Towels' ? setShowTowelGallery(!showTowelGallery) : navigate(`/products/${encodeURIComponent(product.image)}`)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') product.category === 'Towels' ? setShowTowelGallery(!showTowelGallery) : navigate(`/products/${encodeURIComponent(product.image)}`); }} key={`${product.name}-${product.image}`}><div className="catalog-product-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3><span>{product.details}</span><b>{product.category === 'Towels' ? (showTowelGallery ? 'Hide towel gallery' : 'View towel gallery') : 'View product details'} <i>↗</i></b></div></article>)}</div>{showTowelGallery && activeCategory !== 'Towels' && <section className="towels-gallery" aria-label="Towel gallery"><div className="towels-gallery-heading"><div><Eyebrow>Towel collection</Eyebrow><h2>All towel options</h2></div><button type="button" onClick={() => setShowTowelGallery(false)}>Close gallery</button></div><div className="towels-gallery-grid">{towelGalleryImages.map((variant) => <figure key={variant.image}><img src={`${BASE}catalog-2022-products/${variant.image}`} alt={variant.name} loading="lazy" /><figcaption>{variant.name}</figcaption></figure>)}</div></section>}</div></section></div></>;
+}
+
+function StoreProductDetailPage() {
+  const image = decodeURIComponent(fromBase(window.location.pathname).split('/')[2] || '');
+  const product = groupedCatalogProducts.find((item) => item.image === image);
+  const [expandedVariant, setExpandedVariant] = useState(null);
+  if (!product) return <section className="section-pad"><div className="container"><h1>Product not found</h1><Link className="text-link" href="/products">Back to products <span>↗</span></Link></div></section>;
+  return <section className="product-detail-page section-pad"><div className="container"><Link className="text-link" href="/products">← Back to products</Link><div className="product-detail-layout"><div className="product-detail-main-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} /></div><div><Eyebrow>{product.category}</Eyebrow><h1>{product.name}</h1><div className="product-detail-variants">{product.variants.map((variant, index) => <article key={`${variant.name}-${variant.image}`}><div className="variant-heading"><h2>{variant.name}</h2><button type="button" onClick={() => setExpandedVariant(expandedVariant === index ? null : index)}>{expandedVariant === index ? 'Hide details' : 'View details'}</button></div>{expandedVariant === index && <p>{variant.details}</p>}</article>)}</div></div></div></div></section>;
+}
+
+function LegacyStoreProductPage() {
+  const image = decodeURIComponent(fromBase(window.location.pathname).split('/')[2] || '');
+  const product = groupedCatalogProducts.find((item) => item.image === image);
+  const [selectedVariant, setSelectedVariant] = useState(0);
+  useEffect(() => {
+    const breadcrumb = document.querySelector('.store-breadcrumb .container');
+    if (!breadcrumb || breadcrumb.querySelector('.store-back-button')) return undefined;
+    const button = document.createElement('a');
+    button.className = 'store-back-button';
+    button.href = toBase('/products');
+    button.textContent = '← Back';
+    breadcrumb.prepend(button);
+    return () => button.remove();
+  }, []);
+  if (!product) return <section className="section-pad"><div className="container"><h1>Product not found</h1><Link className="text-link" href="/products">Back to products <span>↗</span></Link></div></section>;
+  const variant = product.variants[selectedVariant] || product.variants[0];
+  return <section className="store-product-page"><div className="store-breadcrumb"><div className="container"><Link href="/">Home</Link><span>/</span><Link href="/products">Products</Link><span>/</span><b>{product.category}</b></div></div><div className="container store-product-main"><div className="store-gallery"><div className="store-main-image"><img src={`${BASE}catalog-2022-products/${variant.image}`} alt={variant.name} /></div><div className="store-thumbnails">{product.variants.map((item, index) => <button className={selectedVariant === index ? 'selected' : ''} type="button" onClick={() => setSelectedVariant(index)} key={`${item.name}-${item.image}`}><img src={`${BASE}catalog-2022-products/${item.image}`} alt={item.name} /></button>)}</div></div><div className="store-product-info"><p className="store-sku">{product.category} / Product details</p><h1>{product.name}</h1><p className="store-summary">Multiple sizes and packing specifications are available for this product family.</p><div className="store-quote-box"><strong>Request pricing</strong><span>Contact us for MOQ, availability and shipping details.</span></div><div className="store-variant-picker"><h2>Available options</h2>{product.variants.map((item, index) => <button className={selectedVariant === index ? 'selected' : ''} type="button" onClick={() => setSelectedVariant(index)} key={`${item.name}-${item.image}`}><span>{item.name}</span><b>{selectedVariant === index ? 'Selected' : 'View option'}</b></button>)}</div><a className="store-contact-button" href={`mailto:sales@ananexxgen.com?subject=${encodeURIComponent(`Product inquiry: ${product.name}`)}`}>Contact us about this product <span>↗</span></a></div></div><div className="container store-product-description"><h2>Product details</h2><p>{variant.details}</p><div className="store-detail-columns"><div><h3>Specifications</h3><p>Product category: {product.category}</p><p>Packaging and MOQ details available on request.</p></div><div><h3>Need a custom assortment?</h3><p>Tell us which sizes, quantities and delivery requirements you need. Our sourcing team will help identify the right option.</p></div></div></div></section>;
+}
+
+function StoreProductPage() {
+  const image = decodeURIComponent(fromBase(window.location.pathname).split('/')[2] || '');
+  const matchedProduct = groupedCatalogProducts.find((item) => item.image === image) || (() => {
+    const rawProduct = catalogProducts.find((item) => item.image === image);
+    return rawProduct ? { name: rawProduct.name, category: rawProduct.category, image: rawProduct.image } : undefined;
+  })();
+  const isTowel = towelCategories.has(matchedProduct?.category) || /towel|cloth/i.test(`${matchedProduct?.name || ''} ${matchedProduct?.category || ''}`);
+  const product = isTowel ? combinedTowelProduct : matchedProduct;
+  const [selectedVariant, setSelectedVariant] = useState(0);
+  const galleryImages = isTowel
+    ? [...new Map(combinedTowelProduct.variants.map((variant) => [variant.image, variant])).values()]
+    : [];
+
+  if (!product) return <section className="section-pad"><div className="container"><h1>Product not found</h1><Link className="text-link" href="/products">Back to products <span>↗</span></Link></div></section>;
+  const variant = product.variants[selectedVariant] || product.variants[0];
+
+  return <section className="store-product-page"><div className="store-breadcrumb"><div className="container"><Link className="store-back-button" href="/products">← Back</Link><Link href="/">Home</Link><span>/</span><Link href="/products">Products</Link><span>/</span><b>{product.category}</b></div></div><div className="container store-product-main"><div className="store-gallery"><div className="store-main-image"><img src={`${BASE}catalog-2022-products/${variant.image}`} alt={variant.name} /></div><div className="store-thumbnails">{product.variants.map((item, index) => <button className={selectedVariant === index ? 'selected' : ''} type="button" onClick={() => setSelectedVariant(index)} key={`${item.name}-${item.image}`}><img src={`${BASE}catalog-2022-products/${item.image}`} alt={item.name} /></button>)}</div></div><div className="store-product-info"><p className="store-sku">{product.category} / Product details</p><h1>{product.name}</h1><p className="store-summary">Multiple sizes and packing specifications are available for this product family.</p><div className="store-quote-box"><strong>Request pricing</strong><span>Contact us for MOQ, availability and shipping details.</span></div><div className="store-variant-picker"><h2>Available options</h2>{product.variants.map((item, index) => <button className={selectedVariant === index ? 'selected' : ''} type="button" onClick={() => setSelectedVariant(index)} key={`${item.name}-${item.image}`}><span>{item.name}</span><b>{selectedVariant === index ? 'Selected' : 'View option'}</b></button>)}</div><a className="store-contact-button" href={`mailto:sales@ananexxgen.com?subject=${encodeURIComponent(`Product inquiry: ${product.name}`)}`}>Contact us about this product <span>↗</span></a></div></div><div className="container store-product-description"><h2>Product details</h2><p>{variant.details}</p>{isTowel && <section className="towel-detail-gallery"><div className="towel-detail-gallery-heading"><Eyebrow>Complete collection</Eyebrow><h2>All towel options</h2></div><div className="towel-detail-gallery-grid">{galleryImages.map((item) => <figure key={item.image}><img src={`${BASE}catalog-2022-products/${item.image}`} alt={item.name} loading="lazy" /><figcaption>{item.name}</figcaption></figure>)}</div></section>}</div></section>;
+}
+
 const fpAndADetails = {
   experience: '3–5 years in financial analysis',
-  description: 'A&A Nexxgen is a family-owned wholesale distributor of general merchandise headquartered in Piscataway, New Jersey. For more than 15 years, we have helped retailers and wholesalers source quality products from around the globe at the best possible price. This role supports planning, pricing, profitability and financial decision-making across the business.',
-  requirements: ["Bachelor's degree in Accounting, Finance, or a related field is required.", '3–5 years of experience in financial analysis or pricing analysis.', 'Strong proficiency in Excel, including financial modeling and scenario analysis.', 'Solid understanding of margin analysis, pricing structures, and profitability drivers.', 'Excellent analytical and problem-solving skills with high attention to detail.', 'Hands-on experience with forecasting, budgeting, variance analysis and financial models.', 'Strong written and verbal communication skills.', 'Master’s degree in Finance or an MBA is preferred.'],
-  responsibilities: ['Support annual budgeting and periodic forecasts based on business trends and historical performance.', 'Analyze financial and operational data to identify trends, risks and opportunities.', 'Build and maintain financial models for planning, pricing and profitability analysis.', 'Evaluate profitability by customer, product line and sales channel.', 'Identify cost-saving opportunities across sourcing, logistics and overhead.', 'Conduct variance analysis against budgets and prior periods.', 'Prepare monthly, quarterly and ad hoc reports and dashboards for leadership.', 'Monitor cash flow and key liquidity metrics.', 'Partner with Sales, Operations and Accounting teams on financial assumptions.', 'Evaluate new initiatives, product launches and business opportunities.'],
+  whoWeAre: 'A&A Nexxgen is a leading wholesale distributor of general merchandise, headquartered in Piscataway, New Jersey. For more than 15 years, we have helped retailers and wholesalers across the country source high-quality products from around the globe at the best possible price. Our core strength is identifying qualified suppliers based on each client\'s specific needs and requirements, and we have built a strong network of vendors across key sourcing regions worldwide. We are a family-owned firm and a small, close-knit team, so every client receives personalized support. We do our homework on every order, source products efficiently, and put our full effort behind each one, no matter the size. Beyond fulfilling orders, we help our clients grow by identifying the products in highest demand for their business. We are in the business of long-term, mutually beneficial relationships, not just moving product.',
+  overview: 'As our FP&A Analyst, you will serve as a key financial partner to the business, helping translate day-to-day sales, purchasing, and operational activity into clear, forward-looking financial plans. You will build and refine budgets and forecasts, understand what the numbers are saying about performance, pricing, and profitability, and work closely with Sales, Purchasing, and Accounting to turn that insight into reporting and recommendations leadership can act on.',
+  whyUs: 'At A&A Nexxgen, you will work directly with our founder, an industry veteran with over 25 years of experience building and running distribution businesses. You will work on real problems with real consequences, see the impact of your work quickly, and have the freedom to bring ideas to the table and take ownership of your work.',
+  closing: 'If you are a motivated, detail-oriented finance professional looking to grow with a company that puts its full effort behind every relationship, we would love to hear from you. Please submit your resume along with a brief note on your relevant experience.',
+  description: 'A&A Nexxgen is a leading wholesale distributor of general merchandise, headquartered in Piscataway, New Jersey. For more than 15 years, we have helped retailers and wholesalers across the country source high-quality products from around the globe at the best possible price. As our FP&A Analyst, you will translate sales, purchasing and operational activity into clear financial plans, forecasts, reporting and recommendations for leadership. You will work closely with Sales, Purchasing and Accounting and become one of the people who understands the business best, from pricing and procurement to cash flow.',
+  requirements: ["Bachelor's degree in Accounting, Finance, or a related field is required.", '3-5 years of experience in financial analysis or pricing analysis.', 'Strong proficiency in Excel, including financial modeling and scenario analysis.', 'Solid understanding of margin analysis, pricing structures, and profitability drivers.', 'Excellent analytical and problem-solving skills, with high attention to detail.', 'Hands-on experience building financial models and working with forecasting, budgeting, and variance analysis.', 'Strong written and verbal communication skills, with the ability to collaborate across departments.', 'Comfortable managing multiple priorities in a fast-paced, growing organization.', "Master's degree in Finance or an MBA is preferred."],
+  responsibilities: ['Support the annual budgeting process and prepare periodic forecasts based on business trends and historical performance.', 'Analyze financial and operational data to identify trends, risks, and opportunities that inform business decisions.', 'Build and maintain financial models to support planning, pricing, and profitability analysis.', 'Evaluate profitability by customer, product line, and sales channel.', 'Identify and recommend cost-saving opportunities across sourcing, logistics, and overhead.', 'Conduct variance analysis comparing actual results to budget and prior periods.', 'Prepare monthly, quarterly, and ad hoc financial reports and dashboards for leadership.', 'Monitor cash flow and key liquidity metrics to support financial planning.', 'Partner with Sales, Operations, and Accounting to gather data and align on assumptions.', 'Assist with financial evaluation of new initiatives, product launches, or business opportunities.', 'Continuously identify opportunities to improve financial processes, reporting efficiency, and data accuracy.'],
 };
+const staffAccountantDetails = {
+  experience: '2-4 years in accounting or bookkeeping',
+  whoWeAre: fpAndADetails.whoWeAre,
+  overview: 'As our Staff Accountant/Bookkeeper, you will be the person keeping the financial engine of the business running smoothly day to day. You will manage the detailed, ongoing work of recording transactions, reconciling accounts, and keeping our books accurate and current, so that everyone from the founder to the FP&A Analyst can trust the numbers they are working with. This role blends accounts payable, accounts receivable, reconciliations, close activities, and ad hoc requests.',
+  whyUs: 'At A&A Nexxgen, you will work closely with our founder, an industry veteran with over 25 years of experience, rather than getting lost in a large accounting department. You will see firsthand how a distribution business actually runs, get exposure to real vendor relationships and cash flow decisions, and have the freedom to suggest better ways of doing things.',
+  closing: 'If you are a detail-oriented accounting professional who enjoys keeping the books tight and the numbers accurate, we would love to hear from you. Please submit your resume along with a brief note on your relevant experience.',
+  description: 'A&A Nexxgen is a leading wholesale distributor of general merchandise, headquartered in Piscataway, New Jersey. As our Staff Accountant/Bookkeeper, you will keep the financial engine running smoothly by recording transactions, reconciling accounts, maintaining accurate books, and supporting close activities. You will be a dependable point of contact for invoices, payments and financial recordkeeping, with direct exposure to vendor relationships, cash flow decisions and operational challenges.',
+  requirements: ["Associate's or Bachelor's degree in Accounting, Finance, or a related field, or equivalent practical experience.", '2-4 years of bookkeeping or staff accounting experience, ideally within a distribution, import, or retail environment.', 'Proficiency in QuickBooks or similar accounting software and Microsoft Excel.', 'Solid understanding of accounts payable, accounts receivable, and general ledger processes.', 'Strong attention to detail and organizational skills, with the ability to manage multiple deadlines.', 'Good communication skills and the ability to work well across departments.'],
+  responsibilities: ['Manage day-to-day bookkeeping, including processing accounts payable and accounts receivable.', 'Perform regular bank and credit card reconciliations.', 'Assist with month-end and year-end close, including journal entries and account reconciliations.', 'Maintain the general ledger and ensure accurate, up-to-date financial records.', 'Process vendor invoices and customer payments, and monitor aging reports.', 'Support payroll processing and related recordkeeping.', 'Prepare and file sales tax returns as required.', 'Support the FP&A Analyst with data pulls and financial reporting as needed.', 'Maintain organized, audit-ready financial documentation.'],
+};
+const financeInternDetails = {
+  experience: 'None required - open to students and recent graduates',
+  whoWeAre: fpAndADetails.whoWeAre,
+  overview: 'As our Finance/Accounting Intern, you will get a genuine, hands-on introduction to finance and accounting inside a real distribution business. You will support our FP&A Analyst and Staff Accountant/Bookkeeper with data entry, basic analysis, reconciliations, and recordkeeping, while also taking on ad hoc projects from the founder. Because we are a small team, you will get exposure to purchasing, inventory, and vendor coordination too.',
+  whyUs: 'Interning at A&A Nexxgen means learning directly from our founder, an industry veteran with over 25 years of experience running a distribution business. You will work on real tasks with real impact, not busy work, and have the freedom to ask questions, offer ideas, and get involved beyond your core responsibilities.',
+  closing: 'This role is ideal for someone who wants broad, real-world exposure to how a distribution business runs financially and operationally. Please submit your resume along with a brief note on why you are interested.',
+  description: 'A&A Nexxgen is a leading wholesale distributor of general merchandise, headquartered in Piscataway, New Jersey. As our Finance/Accounting Intern, you will get a hands-on introduction to finance and accounting inside a real distribution business. You will support the FP&A Analyst and Staff Accountant/Bookkeeper with data entry, basic analysis, reconciliations and recordkeeping, while also getting exposure to purchasing, inventory and vendor coordination.',
+  requirements: ['Currently pursuing or recently completed a degree in Accounting, Finance, Business Administration, or a related field.', 'Strong interest in learning the finance and operations side of a distribution business.', 'Proficient in Microsoft Excel; familiarity with QuickBooks or similar software is a plus.', 'Highly organized, detail-oriented, and comfortable wearing multiple hats.', 'Strong communication skills and a proactive, can-do attitude.', 'Able to work remotely with a reliable internet connection.'],
+  responsibilities: ['Support the FP&A Analyst with data entry, report preparation, and basic financial analysis tasks.', 'Assist the Staff Accountant/Bookkeeper with invoice processing, reconciliations, and recordkeeping.', 'Help maintain and organize financial and operational documents.', 'Take on ad hoc projects and tasks assigned directly by the founder.', 'Provide general administrative and operational support as needed.', 'Assist with special projects related to purchasing, inventory tracking, or vendor coordination.'],
+};
+fpAndADetails.description = `Who Are We: ${fpAndADetails.whoWeAre}\n\nPosition Overview: ${fpAndADetails.overview}\n\nWhy A&A Nexxgen?: ${fpAndADetails.whyUs}`;
+staffAccountantDetails.description = `Who Are We: ${staffAccountantDetails.whoWeAre}\n\nPosition Overview: ${staffAccountantDetails.overview}\n\nWhy A&A Nexxgen?: ${staffAccountantDetails.whyUs}`;
+financeInternDetails.description = `Who Are We: ${financeInternDetails.whoWeAre}\n\nPosition Overview: ${financeInternDetails.overview}\n\nWhy A&A Nexxgen?: ${financeInternDetails.whyUs}`;
 const jobs = [
   { title: 'Financial Planning & Analysis Analyst (FP&A Analyst)', location: 'Remote', type: 'Full-Time', pay: '$90K – $110K / year', details: fpAndADetails },
-  { title: 'Staff Accountant / Bookkeeper', location: 'Remote', type: 'Full-Time', pay: '$65K – $85K / year' },
-  { title: 'Finance/Accounting Intern', location: 'Remote', type: 'Internship', pay: '$20 – $25 / hour' },
+  { title: 'Staff Accountant / Bookkeeper', location: 'Remote', type: 'Full-Time', pay: '$65K – $85K / year', details: staffAccountantDetails },
+  { title: 'Finance/Accounting Intern', location: 'Remote', type: 'Internship', pay: '$20 – $25 / hour', details: financeInternDetails },
 ];
 function JoinUs() {
   const [selectedJob, setSelectedJob] = useState(null);
@@ -235,36 +444,48 @@ function OldJoinUs() { return <><div className="scroll-stage"><section className
 function App() {
   const [path, setPath] = useState(fromBase(window.location.pathname));
   useEffect(() => { const onPop = () => setPath(fromBase(window.location.pathname)); window.addEventListener('popstate', onPop); return () => window.removeEventListener('popstate', onPop); }, []);
-   const page = path === '/about' ? <About /> : path === '/services' ? <Services /> : path === '/products' ? <Products /> : path === '/seasonal-products' ? <SeasonalProducts /> : path === '/join-us' ? <JoinUs /> : <Home />;
+   const page = path === '/about' ? <><About /><WhyChooseSection /></> : path === '/services' ? <Services /> : path.startsWith('/products/') ? <StoreProductPage /> : path === '/products' ? <ProductsDetailsPage /> : path === '/seasonal-products' ? <SeasonalProducts /> : path === '/join-us' ? <JoinUs /> : <Home />;
    useEffect(() => { document.title = `${path === '/' ? 'Global Sourcing' : path.slice(1).replace(/^[a-z]/, (letter) => letter.toUpperCase())} | A&A NexxGen`; }, [path]);
-   useEffect(() => {
-     if (path !== '/about') return undefined;
-     const image = document.querySelector('.about-why-image img');
-     if (!image) return undefined;
-     const iframe = document.createElement('iframe');
-     iframe.src = 'https://lottie.host/embed/6bc23c0a-7a80-4f2e-ae90-ab1517cbed52/NDZJLxlenf.lottie';
-     iframe.title = 'A&A NexxGen global sourcing animation';
-     iframe.loading = 'lazy';
-     image.replaceWith(iframe);
-     return undefined;
-   }, [path]);
-   useEffect(() => {
-     if (path !== '/about') return undefined;
-     const target = document.querySelector('.about-feature-grid');
+    useEffect(() => {
+      if (path !== '/about') return undefined;
+      const image = document.querySelector('.about-why-image img');
+      if (!image) return undefined;
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://lottie.host/embed/6bc23c0a-7a80-4f2e-ae90-ab1517cbed52/NDZJLxlenf.lottie';
+      iframe.title = 'A&A NexxGen global sourcing animation';
+      iframe.loading = 'lazy';
+      image.replaceWith(iframe);
+      return undefined;
+    }, [path]);
+    useEffect(() => {
+      if (path !== '/about') return undefined;
+      const target = document.querySelector('.about-feature-grid');
      if (!target) return undefined;
      const observer = new IntersectionObserver(([entry]) => target.classList.toggle('is-visible', entry.isIntersecting), { threshold: 0.2 });
      observer.observe(target);
      return () => observer.disconnect();
    }, [path]);
-   useEffect(() => {
-     if (path !== '/') return undefined;
-     const target = document.querySelector('.scroll-stage>.intro .intro-feature');
-     if (!target) return undefined;
-     const observer = new IntersectionObserver(([entry]) => target.classList.toggle('is-visible', entry.isIntersecting), { threshold: 0.2 });
-     observer.observe(target);
-     return () => observer.disconnect();
-   }, [path]);
-  return <><Header /><main>{page}</main><Footer /></>;
+    useEffect(() => {
+      if (path !== '/') return undefined;
+      const target = document.querySelector('.scroll-stage>.intro .intro-feature');
+      if (!target) return undefined;
+      const observer = new IntersectionObserver(([entry]) => target.classList.toggle('is-visible', entry.isIntersecting), { threshold: 0.2 });
+      observer.observe(target);
+      return () => observer.disconnect();
+    }, [path]);
+    useEffect(() => {
+      if (path !== '/services') return undefined;
+      const cards = [...document.querySelectorAll('.service-card')];
+      if (!cards.length) return undefined;
+      const observer = new IntersectionObserver((entries) => entries.forEach((entry) => entry.target.classList.toggle('is-visible', entry.isIntersecting)), { threshold: 0.2 });
+      cards.forEach((card) => observer.observe(card));
+      return () => observer.disconnect();
+    }, [path]);
+   return <><Header /><main>{page}</main><Footer /></>;
 }
 
-export default App;
+ function WhyChooseSection() {
+   return <section className="about-why section-pad"><div className="container about-why-container"><div className="about-why-grid"><div className="about-why-image"><img src="/wd.png" alt="Global sourcing team illustration" /></div><div className="about-why-copy"><h2>Why Choose A &amp; A NexxGen?</h2><div className="about-copy-rule" /><ul>{whyChoosePoints.map((point) => <li key={point}>{point}</li>)}</ul></div></div></div></section>;
+ }
+
+ export default App;
