@@ -1,32 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import catalogProducts from './catalogProducts.json';
+import { appConfig } from './config/appConfig.js';
+import Link from './components/Link.jsx';
+import { fromBase, navigate, toBase } from './routing/navigation.js';
 
 const logo = 'https://nexxgenhome.com/wp-content/uploads/2022/02/cropped-NEXXGEN-LOGO-V-RGB_site_logo.png';
 
-const BASE = import.meta.env.BASE_URL;
-
-function toBase(path) {
-  return path === '/' ? BASE : BASE.replace(/\/$/, '') + path;
-}
-
-function fromBase(pathname) {
-  const prefix = BASE.replace(/\/$/, '');
-  if (!pathname.startsWith(prefix)) return pathname;
-  const path = pathname.slice(prefix.length);
-  return path === '' || path === '/' ? '/' : path;
-}
-
-function navigate(path) {
-  window.history.pushState({}, '', toBase(path));
-  window.dispatchEvent(new PopStateEvent('popstate'));
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function Link({ href, children, className = '' }) {
-  const target = Array.isArray(children) && children[0]?.trim?.() === 'Discover NexxGen' ? '/products' : href;
-  const internal = target.startsWith('/');
-  return <a className={className} href={internal ? toBase(target) : target} onClick={internal ? (event) => { event.preventDefault(); navigate(target); } : undefined}>{children}</a>;
-}
+const BASE = appConfig.baseUrl;
 
 function Header() {
   const [open, setOpen] = useState(false);
@@ -63,19 +43,20 @@ function Header() {
   }, [open]);
   return <header ref={headerRef} className={`site-header ${open ? 'menu-open' : ''} ${scrolled ? 'scrolled' : ''} ${lightSurface ? 'light-surface' : ''}`}><div className="container nav-wrap">
      <Link className="brand" href="/" aria-label="A&A NexxGen home"><span className="brand-mark"><img src={logo} alt="" /></span><span className="brand-name">NEXXGEN</span></Link>
-    <button className="menu-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>Menu</button>
-     <nav className={`main-nav ${open ? 'open' : ''}`} onClick={(event) => { if (event.target.closest('a')) setOpen(false); }}>
-          <Link className={itemClass('/')} href="/">Home</Link><Link className={itemClass('/about')} href="/about">About</Link><Link className={itemClass('/services')} href="/services">Services</Link><Link className={itemClass('/products')} href="/products">Products</Link><Link className={itemClass('/join-us')} href="/join-us">Careers</Link>
+     <button className="menu-toggle" type="button" aria-label="Toggle navigation menu" aria-controls="primary-navigation" aria-expanded={open} onClick={() => setOpen(!open)}>Menu</button>
+      <nav id="primary-navigation" className={`main-nav ${open ? 'open' : ''}`} aria-label="Primary navigation" onClick={(event) => { if (event.target.closest('a')) setOpen(false); }}>
+            <Link className={`nav-item ${itemClass('/')}`} href="/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" /></svg><span>Home</span></Link><Link className={`nav-item ${itemClass('/about')}`} href="/about"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v5m0-8h.01" /></svg><span>About</span></Link><Link className={`nav-item ${itemClass('/services')}`} href="/services"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7M2 19h20M2 9h4m4-4h4m4 7h4" /></svg><span>Services</span></Link><Link className={`nav-item ${itemClass('/products')}`} href="/products"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 5v9l9 5 9-5V8m-9 5v9" /></svg><span>Products</span></Link><Link className={`nav-item ${itemClass('/careers')}`} href="/careers"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18m-11 0v2h4v-2" /></svg><span>Careers</span></Link>
      </nav><div className="header-tools" aria-label="Account tools"><span aria-hidden="true">♧</span><span aria-hidden="true">♙</span></div>
   </div></header>;
 }
 
 function Footer() {
-  return <footer className="site-footer"><div className="container footer-grid"><div><Link className="brand" href="/"><img src={logo} alt="A&A NexxGen" /></Link><p>The next generation of global sourcing.</p></div><div><p className="footer-label">Explore</p><Link href="/about">About</Link><Link href="/services">Services</Link><Link href="/products">Products</Link><Link href="/join-us">Careers</Link></div><div><p className="footer-label">Get in touch</p><a href="mailto:sales@ananexxgen.com">sales@ananexxgen.com</a><a href="tel:+17324292328">1-732-429-2328</a><span>New Jersey, USA</span></div></div><div className="container copyright">© 2026 A&amp;A NexxGen <span>Built for better sourcing.</span></div></footer>;
+  return <footer className="site-footer"><div className="container footer-grid"><div><Link className="brand" href="/"><img src={logo} alt="A&A NexxGen" /></Link><p>The next generation of global sourcing.</p></div><div><p className="footer-label">Explore</p><Link href="/about">About</Link><Link href="/services">Services</Link><Link href="/products">Products</Link><Link href="/careers">Careers</Link></div><div><p className="footer-label">Get in touch</p><a href="mailto:sales@ananexxgen.com">sales@ananexxgen.com</a><a href="tel:+17324292328">1-732-429-2328</a><span>New Jersey, USA</span></div></div><div className="container copyright">© 2026 A&amp;A NexxGen <span>Built for better sourcing.</span></div></footer>;
 }
 
-const Button = ({ href = 'mailto:sales@ananexxgen.com', children, className = 'button-dark' }) => <Link className={`button ${className}`} href={href}>{children} <span>↗</span></Link>;
+const Button = ({ href = 'mailto:sales@ananexxgen.com', children, className = 'button-dark' }) => children === 'View products' ? null : <Link className={`button ${className}`} href={href}>{children} <span>↗</span></Link>;
 const Eyebrow = ({ children }) => <p className="eyebrow">{children}</p>;
+function Cta() { return <section className="cta-band"><div className="container cta-content"><div><Eyebrow>Let’s make something work</Eyebrow><h2>Have a product in mind?</h2></div><Button className="button-light">Tell us about it</Button></div></section>; }
 const Process = () => <div className="process-grid"><div><span>01</span><h3>Discover</h3><p>We understand your product, market and commercial goals.</p></div><div><span>02</span><h3>Define</h3><p>We identify the right suppliers, specifications and path forward.</p></div><div><span>03</span><h3>Deliver</h3><p>We manage quality, logistics and communication through delivery.</p></div></div>;
 const categories = [['card-house', 'Housewares'], ['card-garden', 'Garden furniture'], ['card-plastic', 'Plastic & general merchandise'], ['card-seasonal', 'Seasonal Product']];
 
@@ -189,7 +170,6 @@ function SeasonalProducts() {
 }
 
 function InnerHero({ eyebrow, children, text, style, className = '' }) { return <section className={`hero inner-hero ${className}`} style={style}><div className="container"><Eyebrow>{eyebrow}</Eyebrow><h1>{children}</h1><p className="lead">{text}</p></div></section>; }
-function Cta() { return <section className="cta-band"><div className="container cta-content"><div><Eyebrow>Let’s make something work</Eyebrow><h2>Have a product in mind?</h2></div><Button className="button-light">Tell us about it</Button></div></section>; }
 const whyChoosePoints = [
   "Our core function is to identify qualified suppliers, based on the client's needs and technical requirements.",
   'We focus on sustainable product offerings.',
@@ -206,59 +186,24 @@ const whyChoosePoints = [
 
 const services = ['Comprehensive sourcing', 'Product consultancy', 'Private labeling', 'Quality assurance', 'Risk management', 'Logistics'];
 const serviceImages = [
-  ['https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=85', 'Organized shipping cartons in a warehouse'],
-  ['https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=800&q=85', 'Team discussing a product plan'],
-  ['https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=85', 'Branded products ready for customers'],
-  ['https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=85', 'Quality specialist working at a production line'],
-  ['https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=85', 'Documents and planning for supplier risk'],
-  ['https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=85', 'Shipping containers at a busy port'],
+  [`${BASE}assets/service-1.jpg`, 'Organized products in a distribution warehouse'],
+  [`${BASE}assets/service-2.jpg`, 'A team aligning on a product plan'],
+  [`${BASE}assets/service-3.jpg`, 'Products prepared for customers'],
+  [`${BASE}assets/service-4.jpg`, 'A specialist working on a production line'],
+  [`${BASE}assets/service-5.jpg`, 'Documentation for supplier and project risk'],
+  [`${BASE}assets/service-6.jpg`, 'A delivery truck moving goods across country'],
 ];
-function Services() { return <><div className="scroll-stage"><InnerHero eyebrow="How we help" className="services-hero" text="From supplier research to shipping, we make sourcing easier to manage and easier to trust.">One partner for<br /><em>every moving part.</em></InnerHero><section className="section-pad"><div className="container"><Eyebrow>Our services</Eyebrow><div className="process-grid service-grid">{services.map((service, index) => <div className="service-card" key={service}><img src={serviceImages[index][0]} alt={serviceImages[index][1]} loading="lazy" /><span>0{index + 1}</span><h3>{service}</h3><p>{['Find qualified suppliers and products that match your requirements.','Improve your product mix, pricing structure and market opportunity.','Develop your own brand through product, packaging and artwork support.','Supplier verification, factory audits, inspections and quality control.','Reduce surprises with documentation, supplier checks and project management.','Container supervision, consolidation, shipping and delivery support.'][index]}</p></div>)}</div></div></section></div><Cta /></>; }
-function Products() {
-  const filterCategories = [...new Set(normalizedCatalogProducts.map((product) => product.category))];
-  const [activeCategory, setActiveCategory] = useState(filterCategories[0]);
-  const visibleProducts = normalizedCatalogProducts.filter((product) => product.category === activeCategory);
-  return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero" style={{ backgroundImage: `linear-gradient(90deg,rgba(240,243,231,.94) 0%,rgba(240,243,231,.82) 45%,rgba(240,243,231,.45) 100%), url(${BASE}tr.png)`, backgroundPosition: 'center,center', backgroundSize: 'auto,cover', backgroundRepeat: 'no-repeat,no-repeat' }}><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{catalogProducts.length}</strong> unique products</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters">{filterCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => setActiveCategory(category)} key={category}>{category}</button>)}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <a className="catalog-product-card" href={`${BASE}catalog-2022-products/${product.image}`} target="_blank" rel="noreferrer" key={`${product.name}-${product.details}-${product.image}`}><div className="catalog-product-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3><span>{product.details || 'Original catalog product specification.'}</span><b>Open product image <i>↗</i></b></div></a>)}</div></div></section></div><Cta /></>;
-}
-function ProductsPage() {
-  const filterCategories = [...new Set(groupedCatalogProducts.map((product) => product.category))];
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [showAllFilters, setShowAllFilters] = useState(false);
-  const visibleProducts = activeCategory === 'All'
-    ? groupedCatalogProducts
-    : groupedCatalogProducts.filter((product) => product.category === activeCategory);
-  const visibleCategories = showAllFilters ? filterCategories : filterCategories.slice(0, 3);
+const serviceDescriptions = [
+  'Find qualified suppliers and products that match your requirements.',
+  'Improve your product mix, pricing structure and market opportunity.',
+  'Develop your own brand through product, packaging and artwork support.',
+  'Supplier verification, factory audits, inspections and quality control.',
+  'Reduce surprises with documentation, supplier checks and project management.',
+  'Container supervision, consolidation, shipping and delivery support.',
+];
+function Services() { return <><div className="services-hero-stage"><InnerHero eyebrow="How we help" className="services-hero" text="From supplier research to shipping, we make sourcing easier to manage and easier to trust.">One partner for<br /><em>every moving part.</em></InnerHero></div><section className="services-showcase section-pad"><div className="container"><div className="services-showcase-heading"><Eyebrow>Our services</Eyebrow><h1>Our Services</h1><p>Strategic support across every stage of your sourcing journey.</p></div><div className="service-grid">{services.map((service, index) => <article className="service-card" key={service}><div className="service-card-image"><img src={serviceImages[index][0]} alt={serviceImages[index][1]} loading="lazy" /></div><div className="service-card-copy"><span className="service-card-number">0{index + 1}</span><h2>{service}</h2><p>{serviceDescriptions[index]}</p><a href="mailto:sales@ananexxgen.com">READ MORE <span>›</span></a></div></article>)}</div></div></section></>; }
 
-  return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero catalog-hero-centered" style={{ backgroundImage: `linear-gradient(90deg,rgba(240,243,231,.94),rgba(240,243,231,.72)), url(${BASE}tr.png)` }}><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{groupedCatalogProducts.length}</strong> unique products</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters"><button className={activeCategory === 'All' ? 'selected' : ''} onClick={() => setActiveCategory('All')}>All products</button>{visibleCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => setActiveCategory(category)} key={category}>{category}</button>)}{filterCategories.length > 3 && <button className="filter-more" type="button" onClick={() => setShowAllFilters(!showAllFilters)}>{showAllFilters ? 'See less' : 'See more'}</button>}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <a className="catalog-product-card" href={`${BASE}catalog-2022-products/${product.image}`} target="_blank" rel="noreferrer" key={`${product.name}-${product.image}`}><div className="catalog-product-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3><span>{product.details || 'Original catalog product specification.'}</span><b>Open product image <i>↗</i></b></div></a>)}</div></div></section></div><Cta /></>;
-}
 
-function ProductsCatalogPage() {
-  const filterCategories = [...new Set(groupedCatalogProducts.map((product) => product.category))];
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [showAllFilters, setShowAllFilters] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const visibleProducts = activeCategory === 'All' ? groupedCatalogProducts : groupedCatalogProducts.filter((product) => product.category === activeCategory);
-  const visibleCategories = showAllFilters ? filterCategories : filterCategories.slice(0, 3);
-
-  useEffect(() => {
-    if (!selectedProduct) return undefined;
-    const closeOnEscape = (event) => { if (event.key === 'Escape') setSelectedProduct(null); };
-    document.addEventListener('keydown', closeOnEscape);
-    return () => document.removeEventListener('keydown', closeOnEscape);
-  }, [selectedProduct]);
-
-  return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero" style={{ backgroundImage: `linear-gradient(90deg,rgba(240,243,231,.76),rgba(240,243,231,.34)), url(${BASE}tr.png)` }}><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{groupedCatalogProducts.length}</strong> unique products</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters"><button className={activeCategory === 'All' ? 'selected' : ''} onClick={() => setActiveCategory('All')}>All products</button>{visibleCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => setActiveCategory(category)} key={category}>{category}</button>)}{filterCategories.length > 3 && <button className="filter-more" type="button" onClick={() => setShowAllFilters(!showAllFilters)}>{showAllFilters ? 'See less' : 'See more'}</button>}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <article className="catalog-product-card" role="button" tabIndex="0" onClick={() => setSelectedProduct(product)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') setSelectedProduct(product); }} key={`${product.name}-${product.image}`}><div className="catalog-product-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3><span>{product.variants.length} options available</span></div></article>)}</div></div></section></div>{selectedProduct && <div className="product-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedProduct(null); }}><section className="product-modal" role="dialog" aria-modal="true" aria-labelledby="product-modal-title"><button className="product-modal-close" type="button" aria-label="Close product options" onClick={() => setSelectedProduct(null)}>×</button><p className="eyebrow">{selectedProduct.category}</p><h2 id="product-modal-title">{selectedProduct.name}</h2><div className="product-variants">{selectedProduct.variants.map((variant) => <article key={`${variant.name}-${variant.image}`}><img src={`${BASE}catalog-2022-products/${variant.image}`} alt="" /><div><h3>{variant.name}</h3><p>{variant.details}</p></div></article>)}</div></section></div>}</>;
-}
-
-function LegacyProductsDetailsPage() {
-  const filterCategories = [...new Set(groupedCatalogProducts.map((product) => product.category))];
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [showAllFilters, setShowAllFilters] = useState(false);
-  const visibleProducts = activeCategory === 'All' ? groupedCatalogProducts : groupedCatalogProducts.filter((product) => product.category === activeCategory);
-  const visibleCategories = showAllFilters ? filterCategories : filterCategories.slice(0, 3);
-
-  return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero" style={{ backgroundImage: `linear-gradient(90deg,rgba(240,243,231,.76),rgba(240,243,231,.34)), url(${BASE}tr.png)` }}><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{groupedCatalogProducts.length}</strong> unique products</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters"><button className={activeCategory === 'All' ? 'selected' : ''} onClick={() => setActiveCategory('All')}>All products</button>{visibleCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => setActiveCategory(category)} key={category}>{category}</button>)}{filterCategories.length > 3 && <button className="filter-more" type="button" onClick={() => setShowAllFilters(!showAllFilters)}>{showAllFilters ? 'See less' : 'See more'}</button>}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <article className="catalog-product-card product-detail-card" role="button" tabIndex="0" onClick={() => navigate(`/products/${encodeURIComponent(product.image)}`)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') navigate(`/products/${encodeURIComponent(product.image)}`); }} key={`${product.name}-${product.image}`}><div className="catalog-product-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3></div></article>)}</div></div></section></div></>;
-}
 
 const towelCategories = new Set(['Bath Towels', 'Wash Cloths', 'Kitchen Towel']);
 const towelProducts = groupedCatalogProducts.filter((product) => towelCategories.has(product.category));
@@ -271,9 +216,27 @@ const combinedTowelProduct = {
   variants: towelProducts.flatMap((product) => product.variants).sort((a, b) => Number(b.image === 'image378.png') - Number(a.image === 'image378.png')),
 };
 
+const featuredProductImages = [
+  ['handcrafted-teak-courtyard-lounge-set.png', 'Handcrafted Teak Courtyard Lounge Set', 'Chair-_-Furniture.pdf'],
+  ['tuscan-terrace-dining-set.png', 'Tuscan Terrace Dining Set', 'Garden-Furniture-from-Italy.pdf'],
+  ['amalfi-terrace-bistro-set.png', 'Amalfi Terrace Bistro Set', 'Garden-Furniture-from-Italy.pdf'],
+  ['garden-furniture-turkey.png', 'Garden Furniture from Turkey', 'Garden-Furniture-From-Turkey_.pdf'],
+  ['elegant-lounge-chair-showroom.png', 'Elegant Lounge Chair', 'Chair-_-Furniture.pdf'],
+  ['everyday-broom-collection.png', 'Everyday Broom Collection', 'BROOM-OPTIONS.pdf'],
+  ['handcrafted-mexican-straw-brooms.png', 'Handcrafted Mexican Straw Brooms', 'BROOMS-FROM-MEXICO1.pdf'],
+  ['vibrant-tropical-patio-furniture.png', 'Vibrant Patio Furniture', 'NEXXGEN-PATIO.pdf'],
+  ['indian-school-furniture.png', 'Indian School Furniture', 'School-Furniture-India.pdf'],
+  ['clear-bins-drawer-organizers.png', 'Clear Bins and Drawer Organizers', 'STERILITE.pdf'],
+  ['garden-patio-set-in-bloom.png', 'Garden Patio Set in Bloom', 'NEXXGEN-PATIO.pdf'],
+];
+
+function ProductPdfLibrary() {
+  return <section className="product-pdf-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product catalogs</Eyebrow><h2>Browse our collections.</h2></div><span className="catalog-2022-count">{featuredProductImages.length} collections</span></div><div className="featured-product-grid">{featuredProductImages.map(([image, title, file], index) => <a className="featured-product-card" href={`${BASE}product-pdfs/${encodeURIComponent(file)}`} download={file} key={image}><img src={`${BASE}product-card-images/${image}`} alt={title} loading="lazy" /><div><span>{String(index + 1).padStart(2, '0')}</span><h3>{title}</h3><b>Download PDF <i>↓</i></b></div></a>)}</div></div></section>;
+}
+
 function ProductsDetailsPage() {
   const nonTowelProducts = groupedCatalogProducts.filter((product) => !towelCategories.has(product.category));
-  const displayProducts = [...nonTowelProducts, combinedTowelProduct];
+  const displayProducts = nonTowelProducts;
   const filterCategories = [...new Set(displayProducts.map((product) => product.category))];
   const [activeCategory, setActiveCategory] = useState('All');
   const [showAllFilters, setShowAllFilters] = useState(false);
@@ -287,32 +250,7 @@ function ProductsDetailsPage() {
   return <><div className="scroll-stage catalog-scroll-stage"><section className="catalog-2022-hero" style={{ backgroundImage: `linear-gradient(90deg,rgba(240,243,231,.76),rgba(240,243,231,.34)), url(${BASE}tr.png)` }}><div className="container catalog-2022-hero-grid"><div><Eyebrow>Product catalog</Eyebrow><h1>Products made<br /><em>to move.</em></h1><p className="lead">Explore our product range with specifications taken from the original NexxGen catalog.</p><div className="catalog-2022-stats"><span><strong>{displayProducts.length}</strong> product families</span><span><strong>100%</strong> catalog sourced</span><span><strong>MOQ</strong> details included</span></div></div></div></section><section className="catalog-2022-library section-pad"><div className="container"><div className="section-heading"><div><Eyebrow>Product range</Eyebrow><h2>Find the right fit.</h2></div><span className="catalog-2022-count">Showing {visibleProducts.length} products</span></div><div className="catalog-product-filters"><button className={activeCategory === 'All' ? 'selected' : ''} onClick={() => setActiveCategory('All')}>All products</button>{visibleCategories.map((category) => <button className={activeCategory === category ? 'selected' : ''} onClick={() => { setActiveCategory(category); setShowTowelGallery(false); }} key={category}>{category}</button>)}{filterCategories.length > 3 && <button className="filter-more" type="button" onClick={() => setShowAllFilters(!showAllFilters)}>{showAllFilters ? 'See less' : 'See more'}</button>}</div><div className="catalog-product-grid">{visibleProducts.map((product, index) => <article className={`catalog-product-card product-detail-card ${product.category === 'Towels' ? 'towels-product-card' : ''}`} role="button" tabIndex="0" onClick={() => product.category === 'Towels' ? setShowTowelGallery(!showTowelGallery) : navigate(`/products/${encodeURIComponent(product.image)}`)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') product.category === 'Towels' ? setShowTowelGallery(!showTowelGallery) : navigate(`/products/${encodeURIComponent(product.image)}`); }} key={`${product.name}-${product.image}`}><div className="catalog-product-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className="catalog-product-copy"><p>{product.category}</p><h3>{product.name}</h3><span>{product.details}</span><b>{product.category === 'Towels' ? (showTowelGallery ? 'Hide towel gallery' : 'View towel gallery') : 'View product details'} <i>↗</i></b></div></article>)}</div>{showTowelGallery && activeCategory !== 'Towels' && <section className="towels-gallery" aria-label="Towel gallery"><div className="towels-gallery-heading"><div><Eyebrow>Towel collection</Eyebrow><h2>All towel options</h2></div><button type="button" onClick={() => setShowTowelGallery(false)}>Close gallery</button></div><div className="towels-gallery-grid">{towelGalleryImages.map((variant) => <figure key={variant.image}><img src={`${BASE}catalog-2022-products/${variant.image}`} alt={variant.name} loading="lazy" /><figcaption>{variant.name}</figcaption></figure>)}</div></section>}</div></section></div></>;
 }
 
-function StoreProductDetailPage() {
-  const image = decodeURIComponent(fromBase(window.location.pathname).split('/')[2] || '');
-  const product = groupedCatalogProducts.find((item) => item.image === image);
-  const [expandedVariant, setExpandedVariant] = useState(null);
-  if (!product) return <section className="section-pad"><div className="container"><h1>Product not found</h1><Link className="text-link" href="/products">Back to products <span>↗</span></Link></div></section>;
-  return <section className="product-detail-page section-pad"><div className="container"><Link className="text-link" href="/products">← Back to products</Link><div className="product-detail-layout"><div className="product-detail-main-image"><img src={`${BASE}catalog-2022-products/${product.image}`} alt={product.name} /></div><div><Eyebrow>{product.category}</Eyebrow><h1>{product.name}</h1><div className="product-detail-variants">{product.variants.map((variant, index) => <article key={`${variant.name}-${variant.image}`}><div className="variant-heading"><h2>{variant.name}</h2><button type="button" onClick={() => setExpandedVariant(expandedVariant === index ? null : index)}>{expandedVariant === index ? 'Hide details' : 'View details'}</button></div>{expandedVariant === index && <p>{variant.details}</p>}</article>)}</div></div></div></div></section>;
-}
 
-function LegacyStoreProductPage() {
-  const image = decodeURIComponent(fromBase(window.location.pathname).split('/')[2] || '');
-  const product = groupedCatalogProducts.find((item) => item.image === image);
-  const [selectedVariant, setSelectedVariant] = useState(0);
-  useEffect(() => {
-    const breadcrumb = document.querySelector('.store-breadcrumb .container');
-    if (!breadcrumb || breadcrumb.querySelector('.store-back-button')) return undefined;
-    const button = document.createElement('a');
-    button.className = 'store-back-button';
-    button.href = toBase('/products');
-    button.textContent = '← Back';
-    breadcrumb.prepend(button);
-    return () => button.remove();
-  }, []);
-  if (!product) return <section className="section-pad"><div className="container"><h1>Product not found</h1><Link className="text-link" href="/products">Back to products <span>↗</span></Link></div></section>;
-  const variant = product.variants[selectedVariant] || product.variants[0];
-  return <section className="store-product-page"><div className="store-breadcrumb"><div className="container"><Link href="/">Home</Link><span>/</span><Link href="/products">Products</Link><span>/</span><b>{product.category}</b></div></div><div className="container store-product-main"><div className="store-gallery"><div className="store-main-image"><img src={`${BASE}catalog-2022-products/${variant.image}`} alt={variant.name} /></div><div className="store-thumbnails">{product.variants.map((item, index) => <button className={selectedVariant === index ? 'selected' : ''} type="button" onClick={() => setSelectedVariant(index)} key={`${item.name}-${item.image}`}><img src={`${BASE}catalog-2022-products/${item.image}`} alt={item.name} /></button>)}</div></div><div className="store-product-info"><p className="store-sku">{product.category} / Product details</p><h1>{product.name}</h1><p className="store-summary">Multiple sizes and packing specifications are available for this product family.</p><div className="store-quote-box"><strong>Request pricing</strong><span>Contact us for MOQ, availability and shipping details.</span></div><div className="store-variant-picker"><h2>Available options</h2>{product.variants.map((item, index) => <button className={selectedVariant === index ? 'selected' : ''} type="button" onClick={() => setSelectedVariant(index)} key={`${item.name}-${item.image}`}><span>{item.name}</span><b>{selectedVariant === index ? 'Selected' : 'View option'}</b></button>)}</div><a className="store-contact-button" href={`mailto:sales@ananexxgen.com?subject=${encodeURIComponent(`Product inquiry: ${product.name}`)}`}>Contact us about this product <span>↗</span></a></div></div><div className="container store-product-description"><h2>Product details</h2><p>{variant.details}</p><div className="store-detail-columns"><div><h3>Specifications</h3><p>Product category: {product.category}</p><p>Packaging and MOQ details available on request.</p></div><div><h3>Need a custom assortment?</h3><p>Tell us which sizes, quantities and delivery requirements you need. Our sourcing team will help identify the right option.</p></div></div></div></section>;
-}
 
 function StoreProductPage() {
   const image = decodeURIComponent(fromBase(window.location.pathname).split('/')[2] || '');
@@ -374,83 +312,50 @@ const jobs = [
 function JoinUs() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [selectedResume, setSelectedResume] = useState(null);
-  const benefitsRef = useRef(null);
-  const positionsRef = useRef(null);
+
+  useEffect(() => {
+    const positions = document.querySelector('.positions-table');
+    if (!positions) return undefined;
+    const observer = new IntersectionObserver(([entry]) => {
+      positions.classList.toggle('is-visible', entry.isIntersecting);
+    }, { threshold: 0.15 });
+    observer.observe(positions);
+    return () => observer.disconnect();
+  }, []);
+
+
   const resumeInputRef = useRef(null);
   const handleResumeUpload = (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    const resume = { name: file.name, type: file.type, size: file.size };
-    setSelectedResume(resume);
-    const reader = new FileReader();
-    reader.onload = () => sessionStorage.setItem('uploadedResume', JSON.stringify({ ...resume, data: reader.result }));
-    reader.readAsDataURL(file);
+    setSelectedResume(file);
   };
-  const removeResume = () => {
-    setSelectedResume(null);
-    sessionStorage.removeItem('uploadedResume');
-    if (resumeInputRef.current) resumeInputRef.current.value = '';
-  };
+  const closeModal = () => setSelectedJob(null);
   useEffect(() => {
     if (!selectedJob) return undefined;
-    const closeOnEscape = (event) => { if (event.key === 'Escape') setSelectedJob(null); };
+    const closeOnEscape = (event) => { if (event.key === 'Escape') closeModal(); };
     document.addEventListener('keydown', closeOnEscape);
     return () => document.removeEventListener('keydown', closeOnEscape);
   }, [selectedJob]);
-  useEffect(() => {
-    const target = benefitsRef.current;
-    if (!target) return undefined;
-    const observer = new IntersectionObserver(([entry]) => target.classList.toggle('is-visible', entry.isIntersecting), { threshold: 0.2 });
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, []);
-  useEffect(() => {
-    const target = positionsRef.current;
-    if (!target) return undefined;
-    const observer = new IntersectionObserver(([entry]) => target.classList.toggle('is-visible', entry.isIntersecting), { threshold: 0.2 });
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, []);
   return <>
-    <section className="careers-reference-hero"><div className="container"><h1>Careers at A&amp;A Nexxgen</h1><p>Join a growing distribution company built on long-term relationships.</p><p>We are a family-owned distributor of general merchandise, and we are always looking for talented people who care about doing great work. Explore our current openings below.</p></div></section>
-    <section className="careers-reference-benefits section-pad"><div className="container"><h2>Why Work With Us</h2><div className="careers-benefit-grid" ref={benefitsRef}><article><h3>Close-Knit Team</h3><p>Work directly with the founder and a small team where your contribution is visible.</p></article><article><h3>Room to Grow</h3><p>Take on broad responsibilities and build real experience across the business.</p></article><article><h3>Remote Flexibility</h3><p>Our open roles are remote, so you can do your best work from anywhere.</p></article></div></div></section>
-     <section className="careers-reference-positions section-pad"><div className="container"><h2>Open Positions</h2><div className="positions-table" ref={positionsRef}><div className="position-row position-heading"><strong>Position</strong><strong>Location</strong><strong>Type</strong><strong>Pay</strong><strong>Apply</strong></div>{jobs.map((job) => <div className="position-row" key={job.title}><strong>{job.title}</strong><span>{job.location}</span><span>{job.type}</span><span>{job.pay}</span><div className="position-actions"><button type="button" onClick={() => setSelectedJob(job)}>View &amp; Apply</button></div></div>)}</div></div></section>
+    <section className="careers-reference-hero"><div className="container"><h1>Careers at<br />A&amp;A Nexxgen</h1><p>Join a growing distribution company built on long-term relationships.</p><p>We are a family-owned distributor of general merchandise, and we are always looking for talented people who care about doing great work. Explore our current openings below.</p></div></section>
+    <section className="careers-reference-benefits section-pad"><div className="container"><h2>Why Work With Us</h2><div className="careers-benefit-grid"><article><h3>Close-Knit Team</h3><p>Work directly with the founder and a small team where your contribution is visible.</p></article><article><h3>Room to Grow</h3><p>Take on broad responsibilities and build real experience across the business.</p></article><article><h3>Remote Flexibility</h3><p>Our open roles are remote, so you can do your best work from anywhere.</p></article></div></div></section>
+    <section className="careers-reference-positions section-pad"><div className="container"><h2>Open Positions</h2><div className="positions-table"><div className="position-row position-heading"><strong>Position</strong><strong>Location</strong><strong>Type</strong><strong>Pay</strong><strong>Apply</strong></div>{jobs.map((job) => <div className="position-row" key={job.title}><strong>{job.title}</strong><span>{job.location}</span><span>{job.type}</span><span>{job.pay}</span><div className="position-actions"><button type="button" onClick={() => setSelectedJob(job)}>View &amp; Apply</button></div></div>)}</div></div></section>
     <section className="careers-apply-image"><img src={`${BASE}careers-apply.png`} alt="How to apply information" /></section>
-     {selectedJob && <div className="job-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedJob(null); }}><section className="job-modal" role="dialog" aria-modal="true" aria-labelledby="job-modal-title"><button className="job-modal-close" type="button" aria-label="Close job details" onClick={() => setSelectedJob(null)}>×</button><p className="job-modal-meta">{selectedJob.location} · {selectedJob.type} · {selectedJob.pay}</p><h2 id="job-modal-title">{selectedJob.title}</h2>{selectedJob.details ? <><p><strong>Experience:</strong> {selectedJob.details.experience}</p><h3>Job Description</h3><p>{selectedJob.details.description}</p><h3>Requirements</h3><ul>{selectedJob.details.requirements.map((item) => <li key={item}>{item}</li>)}</ul><h3>Key Responsibilities</h3><ul>{selectedJob.details.responsibilities.map((item) => <li key={item}>{item}</li>)}</ul></> : <p>Full details for this role are available during the application process.</p>}<label className="resume-upload"><span>Upload your resume</span><input ref={resumeInputRef} type="file" accept=".pdf,.doc,.docx" onChange={handleResumeUpload} />{selectedResume ? <small>{selectedResume.name} <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); removeResume(); }}>Remove</button></small> : <small>PDF, DOC, or DOCX</small>}</label><a className="button button-dark" href={`mailto:sales@ananexxgen.com?subject=${encodeURIComponent(`Application: ${selectedJob.title}`)}&body=${encodeURIComponent(`Hello,\n\nI would like to apply for the ${selectedJob.title} position.${selectedResume ? `\n\nResume uploaded: ${selectedResume.name}` : ''}\n\nThank you.`)}`}>Apply Now <span>↗</span></a></section></div>}
+    {selectedJob && <div className="job-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) closeModal(); }}><section className="job-modal" role="dialog" aria-modal="true" aria-labelledby="job-modal-title"><button className="job-modal-close" type="button" aria-label="Close job details" onClick={closeModal}>×</button><p className="job-modal-meta">{selectedJob.location} · {selectedJob.type} · {selectedJob.pay}</p><h2 id="job-modal-title">{selectedJob.title}</h2>{selectedJob.details && <><p><strong>Experience:</strong> {selectedJob.details.experience}</p><h3>Job Description</h3><p>{selectedJob.details.description}</p><h3>Requirements</h3><ul>{selectedJob.details.requirements.map((item) => <li key={item}>{item}</li>)}</ul><h3>Key Responsibilities</h3><ul>{selectedJob.details.responsibilities.map((item) => <li key={item}>{item}</li>)}</ul></>}<label className="resume-upload"><span>Upload your resume</span><input ref={resumeInputRef} type="file" accept=".pdf,.doc,.docx" onChange={handleResumeUpload} /><small>{selectedResume?.name || 'PDF, DOC, or DOCX'}</small></label><p className="resume-upload-note">Your resume is not attached automatically. Attach the selected file to the email that opens.</p><a className="button button-dark" href={`mailto:sales@ananexxgen.com?subject=${encodeURIComponent(`Application: ${selectedJob.title}`)}&body=${encodeURIComponent(`Hello,\n\nI would like to apply for the ${selectedJob.title} position.${selectedResume ? `\n\nI have selected the resume file: ${selectedResume.name}. I will attach it to this email.` : '\n\nI will attach my resume to this email.'}\n\nThank you.`)}`}>Apply Now <span>↗</span></a></section></div>}
   </>;
 }
-
-function LegacyJoinUs() {
-  const benefitsRef = useRef(null);
-  useEffect(() => {
-    const target = benefitsRef.current;
-    if (!target) return undefined;
-    const observer = new IntersectionObserver(([entry]) => {
-      target.classList.toggle('is-visible', entry.isIntersecting);
-    }, { threshold: 0.2 });
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, []);
-  return <>
-    <section className="careers-reference-hero"><div className="container"><h1>Careers at A&amp;A Nexxgen</h1><p>Join a growing distribution company built on long-term relationships.</p><p>We are a family-owned distributor of general merchandise, and we are always looking for talented people who care about doing great work. Explore our current openings below.</p></div></section>
-    <section className="careers-reference-benefits section-pad"><div className="container"><h2>Why Work With Us</h2><div className="careers-benefit-grid" ref={benefitsRef}><article><h3>Close-Knit Team</h3><p>Work directly with the founder and a small team where your contribution is visible.</p></article><article><h3>Room to Grow</h3><p>Take on broad responsibilities and build real experience across the business.</p></article><article><h3>Remote Flexibility</h3><p>Our open roles are remote, so you can do your best work from anywhere.</p></article></div></div></section>
-    <section className="careers-reference-positions section-pad"><div className="container"><h2>Open Positions</h2><div className="positions-table"><div className="position-row position-heading"><strong>Position</strong><strong>Location</strong><strong>Type</strong><strong>Pay</strong><strong>Apply</strong></div>{jobs.map((job) => <div className="position-row" key={job.title}><strong>{job.title}</strong><span>{job.location}</span><span>{job.type}</span><span>{job.pay}</span><a href={`mailto:sales@ananexxgen.com?subject=${encodeURIComponent(`Application: ${job.title}`)}`}>View &amp; Apply</a></div>)}</div></div></section>
-    <section className="careers-reference-apply section-pad"><div className="container"><h2>How to Apply</h2><p>Click “View &amp; Apply” on any position above or email your resume and a short note about your experience to <a href="mailto:sales@ananexxgen.com">sales@ananexxgen.com</a>.</p><p>We will review every application and will be in touch if there is a fit.</p></div></section>
-  </>;
-}
-
-function OldJoinUs() { return <><div className="scroll-stage"><section className="join-hero"><div className="container join-hero-grid"><div><Eyebrow>Build with us</Eyebrow><h1>Make good work<br /><em>move further.</em></h1><p>Bring curiosity, care and commercial thinking to a team making global sourcing feel more personal.</p></div><div className="join-hero-image"><img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=85" alt="Team collaborating around a table" /></div></div></section><section className="section-pad careers-intro"><div className="container intro-grid"><Eyebrow>Why NexxGen</Eyebrow><div><h2>Small team. Global work.</h2><p>We are always interested in meeting thoughtful people who enjoy solving practical problems, building relationships and seeing ideas become real products.</p><p>See an opening that sounds like you? Send your CV and a short note to <a href="mailto:sales@ananexxgen.com?subject=Join%20the%20NexxGen%20team">sales@ananexxgen.com</a>.</p></div></div></section></div><section className="section-pad jobs-section"><div className="container"><div className="section-heading"><div><Eyebrow>Current openings</Eyebrow><h2>Find your next<br /><em>good move.</em></h2></div><span className="catalog-2022-count">{jobs.length} open roles</span></div><div className="jobs-list">{jobs.map((job, index) => <article className="job-card" key={job.title}><div className="job-number">0{index + 1}</div><div className="job-main"><p className="job-type">{job.type}</p><h3>{job.title}</h3><p>{job.text}</p><ul>{job.points.map((point) => <li key={point}>{point}</li>)}</ul><a className="text-link" href={`mailto:sales@ananexxgen.com?subject=${encodeURIComponent(`Application: ${job.title}`)}`}>Apply for this role <span>↗</span></a></div></article>)}</div></div></section><Cta /></>; }
 
 function App() {
   const [path, setPath] = useState(fromBase(window.location.pathname));
   useEffect(() => { const onPop = () => setPath(fromBase(window.location.pathname)); window.addEventListener('popstate', onPop); return () => window.removeEventListener('popstate', onPop); }, []);
-   const page = path === '/about' ? <><About /><WhyChooseSection /></> : path === '/services' ? <Services /> : path.startsWith('/products/') ? <StoreProductPage /> : path === '/products' ? <ProductsDetailsPage /> : path === '/seasonal-products' ? <SeasonalProducts /> : path === '/join-us' ? <JoinUs /> : <Home />;
+   const page = path === '/about' ? <><About /><WhyChooseSection /></> : path === '/services' ? <Services /> : path.startsWith('/products/') ? <StoreProductPage /> : path === '/products' ? <><ProductsDetailsPage /><ProductPdfLibrary /></> : path === '/seasonal-products' ? <SeasonalProducts /> : path === '/careers' || path === '/join-us' ? <JoinUs /> : <Home />;
    useEffect(() => { document.title = `${path === '/' ? 'Global Sourcing' : path.slice(1).replace(/^[a-z]/, (letter) => letter.toUpperCase())} | A&A NexxGen`; }, [path]);
-    useEffect(() => {
-      if (path !== '/about') return undefined;
-      const image = document.querySelector('.about-why-image img');
-      if (!image) return undefined;
-      const iframe = document.createElement('iframe');
+     useEffect(() => {
+       if (path !== '/about') return undefined;
+       const image = document.querySelector('.about-why-image img');
+       if (!image) return undefined;
+        const iframe = document.createElement('iframe');
       iframe.src = 'https://lottie.host/embed/6bc23c0a-7a80-4f2e-ae90-ab1517cbed52/NDZJLxlenf.lottie';
       iframe.title = 'A&A NexxGen global sourcing animation';
       iframe.loading = 'lazy';
@@ -477,7 +382,11 @@ function App() {
       if (path !== '/services') return undefined;
       const cards = [...document.querySelectorAll('.service-card')];
       if (!cards.length) return undefined;
-      const observer = new IntersectionObserver((entries) => entries.forEach((entry) => entry.target.classList.toggle('is-visible', entry.isIntersecting)), { threshold: 0.2 });
+      const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }), { threshold: 0.2 });
       cards.forEach((card) => observer.observe(card));
       return () => observer.disconnect();
     }, [path]);
@@ -485,7 +394,7 @@ function App() {
 }
 
  function WhyChooseSection() {
-   return <section className="about-why section-pad"><div className="container about-why-container"><div className="about-why-grid"><div className="about-why-image"><img src="/wd.png" alt="Global sourcing team illustration" /></div><div className="about-why-copy"><h2>Why Choose A &amp; A NexxGen?</h2><div className="about-copy-rule" /><ul>{whyChoosePoints.map((point) => <li key={point}>{point}</li>)}</ul></div></div></div></section>;
+   return <section className="about-why section-pad"><div className="container about-why-container"><div className="about-why-grid"><div className="about-why-image"><img src={`${BASE}wd.png`} alt="Global sourcing team illustration" /></div><div className="about-why-copy"><h2>Why Choose A &amp; A NexxGen?</h2><div className="about-copy-rule" /><ul>{whyChoosePoints.map((point) => <li key={point}>{point}</li>)}</ul></div></div></div></section>;
  }
 
  export default App;

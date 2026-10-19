@@ -1,6 +1,6 @@
 RewriteEngine On
-RewriteBase /NexxGen/
+RewriteBase /nexgen/
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /NexxGen/index.html [L]
+RewriteRule . /nexgen/index.html [L]
