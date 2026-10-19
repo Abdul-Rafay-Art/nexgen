@@ -1,1 +1,4 @@
 public/product-pdfs/NEXXGEN-PATIO.pdf filter=lfs diff=lfs merge=lfs -text
+product-pdfs/*.pdf filter=lfs diff=lfs merge=lfs -text
+dist-local/product-pdfs/*.pdf filter=lfs diff=lfs merge=lfs -text
+dist/product-pdfs/*.pdf filter=lfs diff=lfs merge=lfs -text

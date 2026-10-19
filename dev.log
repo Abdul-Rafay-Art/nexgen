@@ -1,0 +1,22 @@
+npm notice run nexxgen-frontend@1.0.0 dev
+npm notice run vite --host 0.0.0.0 --port 3000
+
+  [32m[1mVITE[22m v8.3.4[39m  [2mready in [0m[1m3572[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m3000[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.0.170:[1m3000[22m/[39m  [2mWiFi[22m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+[2m1:13:17 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to load url /staging/nexgen/assets/index-fEzOTZ67.js (resolved id: /staging/nexgen/assets/index-fEzOTZ67.js). Does the file exist?
+[2m1:29:06 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m1:41:04 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist-local/index.html[22m
+[2m1:41:05 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist-local/index.html[22m
+[2m1:43:54 pm[22m [36m[1m[vite][22m[39m [32mvite.config.js changed, restarting server...[39m
+[2m1:43:54 pm[22m [36m[1m[vite][22m[39m server restarted.
+[2m1:46:09 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist-local/index.html[22m
+[2m1:46:10 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist-local/index.html[22m
+[2m7:27:13 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist-local/index.html[22m
+[2m7:27:15 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist-local/index.html[22m
+[2m7:38:05 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist-local/index.html[22m
+[2m7:38:07 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist-local/index.html[22m
+[2m7:42:00 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist-local/index.html[22m
+[2m7:42:00 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist-local/index.html[22m

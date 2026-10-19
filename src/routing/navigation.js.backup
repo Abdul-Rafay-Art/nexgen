@@ -1,0 +1,35 @@
+import { appConfig } from '../config/appConfig.js';
+
+// Vite's relative base (`./`) works for assets in any subfolder, but it is not
+// a pathname prefix. Infer the actual deployed app directory from the bundle
+// URL so routes such as /nexgen/about are parsed correctly.
+const moduleScript = [...document.scripts].find((script) => script.type === 'module' && script.src);
+const deployedBasePath = moduleScript
+  ? new URL('../', moduleScript.src).pathname.replace(/\/$/, '')
+  : '';
+const basePath = deployedBasePath || appConfig.baseUrl.replace(/\/$/, '');
+
+export function toBase(path) {
+  if (window.location.protocol === 'file:') return `#${path}`;
+  return path === '/' ? appConfig.baseUrl : `${basePath}${path}`;
+}
+
+export function fromBase(pathname) {
+  if (window.location.protocol === 'file:') return window.location.hash.slice(1) || '/';
+  if (basePath && basePath !== '.' && pathname === basePath) return '/';
+  if (!pathname.startsWith(basePath)) return pathname;
+  const path = pathname.slice(basePath.length);
+  return path === '' || path === '/' ? '/' : path;
+}
+
+export function navigate(path) {
+  if (window.location.protocol === 'file:') {
+    window.location.hash = path;
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  window.history.pushState({}, '', toBase(path));
+  window.dispatchEvent(new PopStateEvent('popstate'));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}

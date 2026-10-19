@@ -1,0 +1,13 @@
+RewriteEngine On
+RewriteBase /staging/nexgen/
+
+RewriteRule ^index\.html$ - [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /staging/nexgen/index.html [L]RewriteEngine On
+RewriteBase /nexgen/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /nexgen/index.html [L]
