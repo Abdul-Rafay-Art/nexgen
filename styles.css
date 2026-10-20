@@ -1363,4 +1363,14 @@
   .site-footer .footer-grid{grid-template-columns:1fr;gap:24px}
   .site-footer .footer-brand-block{display:none}
   .site-footer .footer-grid>div:first-child{grid-column:auto}
+  .site-footer .footer-grid>div{text-align:center}
+  .site-footer .copyright{align-items:center;text-align:center}
+}
+@media(max-width:800px){
+  .site-header .main-nav.open .nav-item.active span{
+    text-decoration:underline;
+    text-decoration-color:#77942d;
+    text-decoration-thickness:2px;
+    text-underline-offset:4px;
+  }
 }
