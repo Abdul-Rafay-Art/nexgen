@@ -12,17 +12,13 @@ function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [lightSurface, setLightSurface] = useState(false);
-  const headerRef = useRef(null);
   const currentPath = fromBase(window.location.pathname);
   const itemClass = (path) => currentPath === path ? 'active' : '';
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 20);
-      const header = headerRef.current;
-      const previousPointerEvents = header?.style.pointerEvents;
-      if (header) header.style.pointerEvents = 'none';
-      const target = document.elementFromPoint(window.innerWidth / 2, 70);
-      if (header) header.style.pointerEvents = previousPointerEvents || '';
+      const target = document.elementsFromPoint(window.innerWidth / 2, 70)
+        .find((element) => !element.closest('.site-header'));
       const section = target?.closest('section');
       const color = section ? getComputedStyle(section).color : '';
       const match = color.match(/\d+/g);
@@ -41,7 +37,7 @@ function Header() {
     document.addEventListener('keydown', onKey);
     return () => { document.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey); };
   }, [open]);
-  return <header ref={headerRef} className={`site-header ${open ? 'menu-open' : ''} ${scrolled ? 'scrolled' : ''} ${lightSurface ? 'light-surface' : ''}`}><div className="container nav-wrap">
+  return <header className={`site-header ${open ? 'menu-open' : ''} ${scrolled ? 'scrolled' : ''} ${lightSurface ? 'light-surface' : ''}`}><div className="container nav-wrap">
      <Link className="brand" href="/" aria-label="A&A NexxGen home"><span className="brand-mark"><img src={logo} alt="" /></span><span className="brand-name">NEXXGEN</span></Link>
      <button className="menu-toggle" type="button" aria-label="Toggle navigation menu" aria-controls="primary-navigation" aria-expanded={open} onClick={() => setOpen(!open)}>Menu</button>
       <nav id="primary-navigation" className={`main-nav ${open ? 'open' : ''}`} aria-label="Primary navigation" onClick={(event) => { if (event.target.closest('a')) setOpen(false); }}>
