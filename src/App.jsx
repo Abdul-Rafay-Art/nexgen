@@ -47,7 +47,7 @@ function Header() {
 }
 
 function Footer() {
-  return <footer className="site-footer"><div className="container footer-grid"><div><p className="footer-label">Explore</p><Link href="/about">About</Link><Link href="/services">Services</Link><Link href="/products">Products</Link><Link href="/careers">Careers</Link></div><div><p className="footer-label">Get in touch</p><a href="mailto:sales@ananexxgen.com">sales@ananexxgen.com</a><a href="tel:+17324292328">1-732-429-2328</a><span>New Jersey, USA</span></div></div><div className="container copyright">© 2026 A&amp;A NexxGen <span>Built for better sourcing.</span></div></footer>;
+  return <footer className="site-footer"><div className="container footer-grid"><div className="footer-brand-block"><Link className="brand" href="/"><img src={logo} alt="A&A NexxGen" /></Link><p>The next generation of global sourcing.</p></div><div><p className="footer-label">Explore</p><Link href="/about">About</Link><Link href="/services">Services</Link><Link href="/products">Products</Link><Link href="/careers">Careers</Link></div><div><p className="footer-label">Get in touch</p><a href="mailto:sales@ananexxgen.com">sales@ananexxgen.com</a><a href="tel:+17324292328">1-732-429-2328</a><span>New Jersey, USA</span></div></div><div className="container copyright">© 2026 A&amp;A NexxGen <span>Built for better sourcing.</span></div></footer>;
 }
 
 const Button = ({ href = 'mailto:sales@ananexxgen.com', children, className = 'button-dark' }) => children === 'View products' ? null : <Link className={`button ${className}`} href={href}>{children} <span>↗</span></Link>;
