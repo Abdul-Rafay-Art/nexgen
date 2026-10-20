@@ -1334,3 +1334,27 @@
   .positions-table .position-actions{justify-content:center}
   .positions-table .position-actions button{padding:9px 12px;font-size:14px;white-space:nowrap}
 }
+
+/* Keep every category-card photo proportional in the narrow mobile grid. */
+.category-grid .category-card::before{display:none!important}
+.category-grid .category-card.card-seasonal{background-image:none!important;background-size:auto}
+.category-grid .category-card-photo{
+  position:absolute;
+  top:14px;
+  left:14px;
+  width:calc(100% - 28px);
+  height:calc(100% - 116px);
+  display:block;
+  object-fit:cover;
+  object-position:center;
+  border-radius:7px 7px 2px 2px;
+  z-index:0;
+}
+@media(max-width:800px){
+  .category-grid .category-card-photo{
+    top:12px;
+    left:12px;
+    width:calc(100% - 24px);
+    height:calc(100% - 106px);
+  }
+}
